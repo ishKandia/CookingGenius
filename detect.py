@@ -11,8 +11,8 @@ def main():
     parser.add_argument("image", help="Path to an image to analyze.")
     parser.add_argument(
         "--model",
-        default="yolo11s.pt",
-        help="Model weights (default: pretrained yolo11s.pt).",
+        default="runs/detect/vegetables/weights/best.pt",
+        help="Trained weights (default: runs/detect/vegetables/weights/best.pt).",
     )
     parser.add_argument("--imgsz", type=int, default=768)
     parser.add_argument("--conf", type=float, default=0.25)
@@ -26,8 +26,14 @@ def main():
         parser.error("--imgsz must be a positive integer.")
     if not 0 <= args.conf <= 1:
         parser.error("--conf must be between 0 and 1.")
+    model_path = Path(args.model)
+    if not model_path.is_file():
+        parser.error(
+            f"Model weights not found: {model_path}. Train the food model first "
+            "or pass an existing weights file with --model."
+        )
 
-    model = YOLO(args.model)
+    model = YOLO(str(model_path))
     results = model.predict(
         source=str(image_path),
         imgsz=args.imgsz,

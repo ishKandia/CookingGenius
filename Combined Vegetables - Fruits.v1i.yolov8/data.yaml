@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 47
+names: ['almond', 'apple', 'asparagus', 'avocado', 'banana', 'beans', 'beet', 'bell pepper', 'blackberry', 'blueberry', 'broccoli', 'brussels sprouts', 'cabbage', 'carrot', 'cauliflower', 'celery', 'cherry', 'corn', 'cucumber', 'egg', 'eggplant', 'garlic', 'grape', 'green bean', 'green onion', 'hot pepper', 'kiwi', 'lemon', 'lettuce', 'lime', 'mandarin', 'mushroom', 'onion', 'orange', 'pattypan squash', 'pea', 'peach', 'pear', 'pineapple', 'potato', 'pumpkin', 'radish', 'raspberry', 'strawberry', 'tomato', 'vegetable marrow', 'watermelon']
+
+roboflow:
+  workspace: ishaans-workspace-ebjam
+  project: combined-vegetables-fruits-6ylqz
+  version: 1
+  license: CC BY 4.0
+  url: https://app.roboflow.com/ishaans-workspace-ebjam/combined-vegetables-fruits-6ylqz/1
