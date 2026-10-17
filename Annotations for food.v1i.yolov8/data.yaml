@@ -1,0 +1,20 @@
+path: ../datasets/food
+train: images/train
+val: images/val
+
+nc: 7
+names:
+  0: asparagus
+  1: bell_pepper
+  2: broccoli
+  3: cabbage
+  4: carrot
+  5: squash
+  6: tomato
+
+roboflow:
+  workspace: ishaans-workspace-ebjam
+  project: annotations-for-food
+  version: 1
+  license: Private
+  url: https://app.roboflow.com/ishaans-workspace-ebjam/annotations-for-food/1

@@ -1,0 +1,12 @@
+path: datasets/food
+train: images/train
+val: images/val
+
+names:
+  0: asparagus
+  1: bell_pepper
+  2: broccoli
+  3: cabbage
+  4: carrot
+  5: squash
+  6: tomato
