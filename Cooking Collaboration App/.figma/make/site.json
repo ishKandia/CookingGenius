@@ -1,0 +1,10 @@
+{
+  "description": "Simplifies cooking for college students by generating recipes from available ingredients and gamifies collaborative meal prep with AI-guided tasks and scoring.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
