@@ -107,6 +107,10 @@ button { color: inherit; cursor: pointer; }
 .camera-bottom { position: absolute; bottom: 22px; left: 20px; right: 20px; }
 .capture { display: block; margin: 0 auto 24px; width: 76px; height: 76px; border: 4px solid white; border-radius: 50%; background: #ffffff30; padding: 6px; }
 .capture span { background: var(--tomato); width: 100%; height: 100%; border-radius: 50%; display: grid; place-items: center; color: white; }
+.capture:disabled, .upload-photo:disabled { opacity: .65; cursor: wait; }
+.upload-photo { display: block; margin: -17px auto 12px; padding: 3px 8px; color: white; background: transparent; border: 0; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.scan-error { margin: 9px 0 0; color: #fff; background: #8f2f24e8; border-radius: 10px; padding: 9px 12px; font-size: 12px; line-height: 1.4; text-align: center; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .input-toggle { height: 55px; border-radius: 17px; background: #171b17d8; display: grid; grid-template-columns: 1fr 1fr; padding: 5px; backdrop-filter: blur(8px); }
 .input-toggle button { border: 0; background: transparent; color: #ffffffa0; border-radius: 13px; display: flex; gap: 7px; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
 .input-toggle button.active { background: var(--white); color: var(--ink); }
@@ -132,6 +136,18 @@ button { color: inherit; cursor: pointer; }
 .page-heading .section-number { padding-top: 8px; }
 .page-heading h1 { font: 600 31px/1.05 "Fraunces"; max-width: 250px; margin: 0; text-align: right; }
 .page-heading p { text-align: right; color: var(--muted); font-size: 12px; margin: 6px 0; }
+.scan-results { margin: 0 22px 17px; border: 1px solid var(--line); border-radius: 19px; background: var(--white); padding: 13px; }
+.scan-results-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.scan-results-heading > span { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1.2px; }
+.scan-results-heading button { border: 0; padding: 0; background: transparent; color: var(--tomato-dark); font-size: 11px; font-weight: 700; }
+.scan-preview { width: 100%; position: relative; overflow: hidden; border-radius: 12px; background: #e8e5dd; }
+.scan-preview img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.detection-box { position: absolute; border: 2px solid #b9ef50; pointer-events: none; }
+.detection-box i { position: absolute; top: 0; left: 0; padding: 2px 5px; background: #b9ef50; color: #1e2719; font-size: 9px; font-style: normal; font-weight: 700; white-space: nowrap; }
+.detection-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.detection-labels span { border-radius: 12px; background: #eff2df; color: var(--herb); padding: 5px 9px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+.no-detections { color: var(--muted); margin: 10px 0 0; font-size: 12px; line-height: 1.45; }
+.generated-recipes-note, .no-recipe-ideas { margin: 0 22px 12px; color: var(--muted); font-size: 12px; line-height: 1.45; }
 .recipe-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 0 22px 14px; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .recipe-card { min-width: 310px; scroll-snap-align: center; padding: 0; border: 1px solid var(--line); background: var(--white); text-align: left; border-radius: 24px; overflow: hidden; transition: .2s; }
 .recipe-card.selected { border: 2px solid var(--tomato); transform: translateY(-2px); }
@@ -144,6 +160,7 @@ button { color: inherit; cursor: pointer; }
 .recipe-info h2 { font: 600 25px "Fraunces"; margin: 5px 0 10px; }
 .recipe-info > div { display: flex; gap: 17px; }
 .recipe-info p { display: flex; gap: 5px; align-items: center; margin: 0; color: var(--muted); font-size: 11px; }
+.recipe-info .recipe-description { display: block; margin-top: 10px; font-size: 12px; line-height: 1.4; }
 .recipe-info small { display: block; color: #a09f99; font-size: 9px; margin-top: 13px; }
 .filter-button { display: flex; margin: 4px auto 20px; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--white); padding: 10px 14px; border-radius: 14px; font-size: 12px; font-weight: 600; }
 .filter-button span { color: white; background: var(--herb); border-radius: 50%; width: 18px; height: 18px; display: grid; place-items: center; font-size: 9px; }
@@ -173,13 +190,14 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .chip-row { display: flex; gap: 7px; }
 .chip-row button { border: 1px solid var(--line); background: transparent; border-radius: 18px; padding: 9px 12px; font-size: 10px; }
 .chip-row button.selected { background: var(--herb); color: white; border-color: var(--herb); }
-.detail-modal { position: absolute; left: 20px; right: 20px; top: 50%; transform: translateY(-50%); background: var(--white); border-radius: 24px; overflow: hidden; }
+.detail-modal { position: absolute; left: 20px; right: 20px; top: 50%; transform: translateY(-50%); background: var(--white); border-radius: 24px; overflow: auto; max-height: 90vh; }
 .detail-modal > img { width: 100%; height: 230px; object-fit: cover; }
 .detail-modal > button { position: absolute; right: 12px; top: 12px; }
 .detail-modal > div { padding: 20px; }
 .detail-modal span { color: var(--tomato); font-size: 9px; letter-spacing: 1px; font-weight: 700; }
 .detail-modal h2 { margin-bottom: 8px; }
 .detail-modal p { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.detail-modal h3 { margin: 17px 0 5px; font-size: 13px; }
 
 .roster { margin-top: 27px; display: flex; flex-direction: column; gap: 10px; }
 .roster-item { display: flex; align-items: center; padding: 13px; background: var(--white); border: 1px solid var(--line); border-radius: 17px; gap: 12px; }

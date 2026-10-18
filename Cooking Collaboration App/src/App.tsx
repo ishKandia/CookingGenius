@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Screen =
   | "home"
@@ -53,29 +53,106 @@ const photos = [
   },
 ];
 
-const recipes = [
+type Recipe = {
+  name: string;
+  match: string;
+  time: string;
+  tag: string;
+  image: string;
+  ingredients: string[];
+  description: string;
+  method: string;
+};
+
+const recipes: Recipe[] = [
   {
     name: "Crispy Garden Tacos",
-    match: 96,
+    match: "96% INGREDIENT MATCH",
     time: "25 min",
     tag: "Best match",
     image: photos[0].url,
+    ingredients: ["bell pepper", "red onion", "chickpeas", "tortillas", "lime"],
+    description: "Charred vegetables, crispy chickpeas, lime crema, and warm tortillas. Fast, flexible, and built for sharing.",
+    method: "Slice the vegetables and sauté until tender with browned edges. Crisp the chickpeas in the pan, warm the tortillas, then fill and finish with lime.",
   },
   {
     name: "Golden Veggie Bowl",
-    match: 91,
+    match: "91% INGREDIENT MATCH",
     time: "20 min",
     tag: "Quick",
     image: photos[1].url,
+    ingredients: ["seasonal vegetables", "rice", "olive oil", "lemon"],
+    description: "A quick grain bowl with warm vegetables and a bright, simple dressing.",
+    method: "Cook the rice. Sauté chopped vegetables in olive oil until tender, then serve over rice with lemon and seasoning.",
   },
   {
     name: "Pantry Crunch Plate",
-    match: 86,
+    match: "86% INGREDIENT MATCH",
     time: "30 min",
     tag: "Low waste",
     image: photos[2].url,
+    ingredients: ["seasonal vegetables", "beans", "bread or grains", "pantry seasoning"],
+    description: "A flexible, low-waste plate for using up vegetables and pantry staples.",
+    method: "Roast or pan-sear chopped vegetables until golden. Add warmed beans and serve with bread or grains.",
   },
 ];
+
+type FoodDetection = { label: string; bbox: [number, number, number, number] };
+type FoodScan = {
+  imageUrl: string;
+  imageSize: { width: number; height: number };
+  detections: FoodDetection[];
+};
+
+function generateRecipes(detections: FoodDetection[]): Recipe[] {
+  const ingredients = [...new Set(
+    detections
+      .map(({ label }) => label.trim().toLowerCase())
+      .filter(Boolean),
+  )];
+  if (ingredients.length === 0) return [];
+
+  const featured = ingredients.slice(0, 3);
+  const titleIngredients = featured.slice(0, 2).map((item) => item.replace(/\b\w/g, (letter) => letter.toUpperCase()));
+  const ingredientList = [...featured, "oil", "salt", "pepper"];
+  const first = titleIngredients[0];
+  const second = titleIngredients[1];
+  return [
+    {
+      name: `Quick ${first} Skillet`,
+      match: "MADE FROM YOUR SCAN",
+      time: "20 min",
+      tag: "Quick",
+      image: photos[1].url,
+      ingredients: ingredientList,
+      description: `A simple one-pan idea featuring ${featured.join(", ")}.`,
+      method: `Chop the detected ingredients into bite-size pieces. Warm a little oil in a skillet, cook the firmest ingredients first, then add the rest and sauté until tender. Season to taste.`,
+    },
+    {
+      name: `${first}${second ? ` & ${second}` : ""} Roast Bowl`,
+      match: "MADE FROM YOUR SCAN",
+      time: "30 min",
+      tag: "One-pan",
+      image: photos[0].url,
+      ingredients: [...featured, "grains or bread", "oil", "salt", "pepper"],
+      description: `A flexible roasted bowl built around ${featured.join(", ")}.`,
+      method: `Cut the detected ingredients into similar-sized pieces, toss with oil, salt, and pepper, then roast at 425°F (220°C) until tender and browned. Serve with cooked grains or bread.`,
+    },
+    {
+      name: `${first} Pantry Soup`,
+      match: "MADE FROM YOUR SCAN",
+      time: "35 min",
+      tag: "Comforting",
+      image: photos[2].url,
+      ingredients: [...featured, "broth or water", "onion or garlic", "oil"],
+      description: `A cozy soup suggestion using ${featured.join(", ")} and basic pantry staples.`,
+      method: `Soften onion or garlic in a little oil if available. Add chopped detected ingredients and enough broth or water to cover. Simmer until everything is tender, then season to taste.`,
+    },
+  ];
+}
+
+const florenceApiUrl = import.meta.env.VITE_FLORENCE_API_URL ?? "http://localhost:8000";
+const maxImageSize = 10 * 1024 * 1024;
 
 const Icon = ({ name, size = 22 }: { name: IconName; size?: number }) => {
   const paths: Record<IconName, React.ReactNode> = {
@@ -191,6 +268,17 @@ export default function App() {
   const [chefCount, setChefCount] = useState(1);
   const [checks, setChecks] = useState([false, false, false, false]);
   const [recipeDetail, setRecipeDetail] = useState<number | null>(null);
+  const [foodScan, setFoodScan] = useState<FoodScan | null>(null);
+  const [scanError, setScanError] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const captureInput = useRef<HTMLInputElement>(null);
+  const uploadInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (foodScan) URL.revokeObjectURL(foodScan.imageUrl);
+    };
+  }, [foodScan]);
 
   useEffect(() => {
     if (screen !== "home") return;
@@ -202,6 +290,62 @@ export default function App() {
     setScreen(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const analyzePhoto = async (file?: File) => {
+    setScanError("");
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setScanError("Choose an image file to scan.");
+      return;
+    }
+    if (file.size > maxImageSize) {
+      setScanError("That photo is too large. Choose an image under 10 MB.");
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+    setScanning(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(`${florenceApiUrl}/analyze`, {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.detail || "The photo could not be analyzed.");
+      }
+      setFoodScan({
+        imageUrl,
+        imageSize: result.image_size,
+        detections: result.detections,
+      });
+      setSelectedRecipe(null);
+      setRecipeDetail(null);
+      go("recipes");
+    } catch (error) {
+      URL.revokeObjectURL(imageUrl);
+      setScanError(
+        error instanceof Error
+          ? error instanceof TypeError || error.message.includes("Failed to fetch")
+            ? "Could not reach the Florence scanner. Start the Florence API and try again."
+            : error.message
+          : "The photo could not be analyzed. Please try again.",
+      );
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  const displayedRecipes = foodScan
+    ? generateRecipes(foodScan.detections)
+    : recipes;
+  const detailRecipe = recipeDetail === null ? null : displayedRecipes[recipeDetail];
+  const activeRecipe = selectedRecipe === null ? null : displayedRecipes[selectedRecipe];
+  const detectedFoods = foodScan
+    ? [...new Set(foodScan.detections.map(({ label }) => label.trim()).filter(Boolean))]
+    : [];
 
   const globalHeader = <AppHeader openMenu={() => setDrawer(true)} goSocial={() => go("social")} />;
 
@@ -238,11 +382,15 @@ export default function App() {
       <div className="camera-bg" />
       <div className="camera-overlay">
         <header><button onClick={() => go("home")} className="camera-close" aria-label="Close"><Icon name="close" /></button><p>Scan ingredients</p><button className="flash">AUTO</button></header>
-        <div className="scan-copy"><span>POINT AT YOUR INGREDIENTS</span><p>Fit everything inside the frame</p></div>
+        <div className="scan-copy"><span>{scanning ? "ANALYZING WITH FLORENCE" : "POINT AT YOUR INGREDIENTS"}</span><p>{scanning ? "This can take a moment on the first scan" : "Take a photo or choose one from your device"}</p></div>
         <div className="target-frame"><i /><i /><i /><i /></div>
         <div className="camera-bottom">
-          <button className="capture" onClick={() => go("recipes")} aria-label="Capture ingredients"><span><Icon name="spark" size={22} /></span></button>
+          <input ref={captureInput} className="visually-hidden" type="file" accept="image/*" capture="environment" onChange={(event) => { void analyzePhoto(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+          <input ref={uploadInput} className="visually-hidden" type="file" accept="image/*" onChange={(event) => { void analyzePhoto(event.target.files?.[0]); event.currentTarget.value = ""; }} />
+          <button className="capture" onClick={() => captureInput.current?.click()} aria-label="Capture ingredients" disabled={scanning}><span><Icon name="spark" size={22} /></span></button>
+          <button className="upload-photo" onClick={() => uploadInput.current?.click()} disabled={scanning}>Upload a photo</button>
           <InputToggle active="camera" go={go} />
+          {scanError && <p className="scan-error" role="alert">{scanError}</p>}
         </div>
       </div>
     </main>
@@ -270,16 +418,29 @@ export default function App() {
       {globalHeader}
       <section className="page-heading">
         <span className="section-number">02 / CHOOSE</span>
-        <div><h1>Made for your pantry</h1><p>12 recipes found</p></div>
+        <div><h1>{foodScan ? "Recipes from your scan" : "Made for your pantry"}</h1><p>{foodScan ? `${displayedRecipes.length} ideas from ${detectedFoods.length} ${detectedFoods.length === 1 ? "food" : "foods"}` : "12 recipes found"}</p></div>
       </section>
+      {foodScan && <section className="scan-results" aria-label="Florence scan results">
+        <div className="scan-results-heading"><span>FLORENCE SCAN</span><button onClick={() => go("camera")}>Scan another photo</button></div>
+        <div className="scan-preview" style={{ aspectRatio: `${foodScan.imageSize.width} / ${foodScan.imageSize.height}` }}>
+          <img src={foodScan.imageUrl} alt="Your scanned ingredients" />
+          {foodScan.detections.map((detection, index) => {
+            const [x1, y1, x2, y2] = detection.bbox;
+            return <span key={`${detection.label}-${index}`} className="detection-box" style={{ left: `${(x1 / foodScan.imageSize.width) * 100}%`, top: `${(y1 / foodScan.imageSize.height) * 100}%`, width: `${((x2 - x1) / foodScan.imageSize.width) * 100}%`, height: `${((y2 - y1) / foodScan.imageSize.height) * 100}%` }}><i>{detection.label}</i></span>;
+          })}
+        </div>
+        {detectedFoods.length ? <div className="detection-labels">{detectedFoods.map((food) => <span key={food}>{food}</span>)}</div> : <p className="no-detections">No ingredients were recognized in this photo. Try a closer, well-lit picture.</p>}
+      </section>}
+      {foodScan && displayedRecipes.length > 0 && <p className="generated-recipes-note">Recipe ideas using foods Florence found, with basic pantry staples.</p>}
       <div className="recipe-scroll">
-        {recipes.map((recipe, index) => (
+        {displayedRecipes.map((recipe, index) => (
           <button key={recipe.name} className={`recipe-card ${selectedRecipe === index ? "selected" : ""}`} onClick={() => setSelectedRecipe(index)} onDoubleClick={() => setRecipeDetail(index)}>
             <div className="recipe-image"><img src={recipe.image} alt={recipe.name} /><span>{recipe.tag}</span>{selectedRecipe === index && <i><Icon name="check" size={17} /></i>}</div>
-            <div className="recipe-info"><span>{recipe.match}% INGREDIENT MATCH</span><h2>{recipe.name}</h2><div><p><Icon name="clock" size={17} /> {recipe.time}</p><p><Icon name="chef" size={17} /> Easy</p></div><small>Tap to select · double tap for details</small></div>
+            <div className="recipe-info"><span>{recipe.match}</span><h2>{recipe.name}</h2><div><p><Icon name="clock" size={17} /> {recipe.time}</p><p><Icon name="chef" size={17} /> Easy</p></div><p className="recipe-description">{recipe.description}</p><small>Tap to select · double tap for details</small></div>
           </button>
         ))}
       </div>
+      {foodScan && displayedRecipes.length === 0 && <p className="no-recipe-ideas">No food items were recognized, so there aren’t recipe ideas to show yet. Try another photo with the ingredients closer and well lit.</p>}
       <button className="filter-button" onClick={() => setFilterOpen(true)}><Icon name="filter" size={19} /> Filter recipes <span>2</span></button>
       <section className="party-panel">
         <div className="party-title"><div><span>YOUR KITCHEN</span><h3>Chef count</h3></div><div className="chef-faces"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="Maya" />{chefCount > 1 && <div>JL</div>}<strong>{chefCount}</strong></div></div>
@@ -288,7 +449,7 @@ export default function App() {
       </section>
       <div className="sticky-action"><BottomButton disabled={selectedRecipe === null} onClick={() => go("instructions")}>{selectedRecipe === null ? "Select a recipe" : "Start cooking"}</BottomButton></div>
       {filterOpen && <div className="modal-layer" onClick={() => setFilterOpen(false)}><div className="bottom-sheet" onClick={(e) => e.stopPropagation()}><i className="sheet-handle" /><div className="sheet-heading"><div><span>PERSONALIZE</span><h2>Filter recipes</h2></div><button onClick={() => setFilterOpen(false)}><Icon name="close" /></button></div><div className="filter-group"><p>DIETARY</p><label><span>Vegetarian</span><input type="checkbox" defaultChecked /></label><label><span>Dairy-free</span><input type="checkbox" /></label></div><div className="filter-group"><p>COOK TIME</p><div className="chip-row"><button>Under 15 min</button><button className="selected">Under 30 min</button><button>Any time</button></div></div><BottomButton onClick={() => setFilterOpen(false)}>Show 8 recipes</BottomButton></div></div>}
-      {recipeDetail !== null && <div className="modal-layer" onClick={() => setRecipeDetail(null)}><div className="detail-modal" onClick={(e) => e.stopPropagation()}><img src={recipes[recipeDetail].image} alt="" /><button onClick={() => setRecipeDetail(null)}><Icon name="close" /></button><div><span>96% MATCH · 25 MIN</span><h2>{recipes[recipeDetail].name}</h2><p>Charred vegetables, crispy chickpeas, lime crema, and warm tortillas. Fast, flexible, and built for sharing.</p></div></div></div>}
+      {detailRecipe && <div className="modal-layer" onClick={() => setRecipeDetail(null)}><div className="detail-modal" onClick={(e) => e.stopPropagation()}><img src={detailRecipe.image} alt="" /><button onClick={() => setRecipeDetail(null)}><Icon name="close" /></button><div><span>{detailRecipe.match} · {detailRecipe.time}</span><h2>{detailRecipe.name}</h2><p>{detailRecipe.description}</p><h3>Ingredients</h3><p>{detailRecipe.ingredients.join(" · ")}</p><h3>How to make it</h3><p>{detailRecipe.method}</p></div></div></div>}
     </main>
   );
 
@@ -311,10 +472,13 @@ export default function App() {
   const Instructions = () => (
     <main className="screen instructions-screen">
       <SecondaryHeader title="Task preview" back={() => go("recipes")} />
-      <section className="instruction-top"><span className="section-number">READY, SET, MISE</span><h1>Here’s your game plan.</h1><p>{chefCount > 1 ? "Two chefs. Three jobs. Dinner in 25." : "Three simple jobs. Dinner in 25."}</p></section>
+      <section className="instruction-top"><span className="section-number">READY, SET, MISE</span><h1>{activeRecipe?.name ?? "Here’s your game plan."}</h1><p>{activeRecipe ? `${activeRecipe.time} · A suggested plan based on your selected recipe.` : chefCount > 1 ? "Two chefs. Three jobs. Dinner in 25." : "Three simple jobs. Dinner in 25."}</p></section>
       <div className="task-owner"><div><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="" /><span><small>YOUR TASKS</small><strong>Maya</strong></span></div><span>1 of {chefCount}</span></div>
       <section className="task-preview-list">
-        {[["01", "Prep the vegetables", "8 min", "Slice peppers and onion into even strips."], ["02", "Build the lime crema", "4 min", "Mix, season, taste, and adjust."], ["03", "Warm & assemble", "10 min", "Bring every part together."]].map((task, index) => <article key={task[0]}><span>{task[0]}</span><div><h2>{task[1]}</h2><p>{task[3]}</p><small><Icon name="clock" size={15} /> {task[2]}{index === 0 && <b><Icon name="camera" size={14} /> Photo check</b>}</small></div></article>)}
+        {(activeRecipe
+          ? [["01", "Prep your ingredients", "8 min", `Prepare: ${activeRecipe.ingredients.slice(0, 3).join(", ")}.`], ["02", "Cook the recipe", activeRecipe.time, activeRecipe.method], ["03", "Taste & serve", "5 min", "Adjust the seasoning, plate your food, and enjoy."]]
+          : [["01", "Prep the vegetables", "8 min", "Slice peppers and onion into even strips."], ["02", "Build the lime crema", "4 min", "Mix, season, taste, and adjust."], ["03", "Warm & assemble", "10 min", "Bring every part together."]]
+        ).map((task, index) => <article key={task[0]}><span>{task[0]}</span><div><h2>{task[1]}</h2><p>{task[3]}</p><small><Icon name="clock" size={15} /> {task[2]}{index === 0 && <b><Icon name="camera" size={14} /> Photo check</b>}</small></div></article>)}
       </section>
       {chefCount > 1 && <div className="swipe-hint"><Icon name="arrow" size={16} /> Swipe to preview Jordan’s tasks <Icon name="chevron" size={16} /></div>}
       <div className="sticky-action"><BottomButton onClick={() => go("tasks")}>Start my tasks</BottomButton></div>
@@ -322,12 +486,19 @@ export default function App() {
   );
 
   const Tasks = () => {
-    const taskRows = [
-      ["Wash and dry all produce", "No soggy vegetables here."],
-      ["Slice peppers into thin strips", "Aim for pieces about the same size."],
-      ["Dice half the red onion", "Small, even pieces cook fastest."],
-      ["Show us your prep", "Take a photo to unlock cooking."],
-    ];
+    const taskRows = activeRecipe
+      ? [
+          ["Gather and prep your ingredients", `Get ready: ${activeRecipe.ingredients.slice(0, 3).join(", ")}.`],
+          ["Cook your selected recipe", activeRecipe.method],
+          ["Taste and adjust", "Check the seasoning and make any final adjustments."],
+          ["Show us your finished dish", "Take a photo to complete your meal."],
+        ]
+      : [
+          ["Wash and dry all produce", "No soggy vegetables here."],
+          ["Slice peppers into thin strips", "Aim for pieces about the same size."],
+          ["Dice half the red onion", "Small, even pieces cook fastest."],
+          ["Show us your prep", "Take a photo to unlock cooking."],
+        ];
     const toggle = (index: number) => {
       if (index > 0 && !checks[index - 1]) return;
       const next = [...checks]; next[index] = !next[index]; setChecks(next);
@@ -335,11 +506,11 @@ export default function App() {
     const complete = checks.every(Boolean);
     return (
       <main className="screen tasks-screen">
-        <header className="task-header"><button onClick={() => go("instructions")}><Icon name="arrow" /></button><div><span>CRISPY GARDEN TACOS</span><p>Task 1 of 3</p></div><b>{checks.filter(Boolean).length}/4</b></header>
+        <header className="task-header"><button onClick={() => go("instructions")}><Icon name="arrow" /></button><div><span>{activeRecipe?.name ?? "CRISPY GARDEN TACOS"}</span><p>Task 1 of 3</p></div><b>{checks.filter(Boolean).length}/4</b></header>
         <div className="progress-track"><span style={{ width: `${checks.filter(Boolean).length * 25}%` }} /></div>
         <section className="active-task">
-          <div className="task-label"><span>01</span><div><small>ACTIVE TASK</small><strong>Prep the vegetables</strong></div><p>8 MIN</p></div>
-          <div className="tip"><Icon name="spark" /><p><strong>Mise tip</strong>Even pieces cook at the same speed. Slow down now, save time later.</p></div>
+          <div className="task-label"><span>01</span><div><small>ACTIVE TASK</small><strong>{activeRecipe ? "Prep your ingredients" : "Prep the vegetables"}</strong></div><p>8 MIN</p></div>
+          <div className="tip"><Icon name="spark" /><p><strong>Mise tip</strong>{activeRecipe ? activeRecipe.method : "Even pieces cook at the same speed. Slow down now, save time later."}</p></div>
           <div className="checklist">
             {taskRows.map((row, index) => {
               const locked = index > 0 && !checks[index - 1];
@@ -357,9 +528,9 @@ export default function App() {
       <div className="summary-confetti"><i /><i /><i /><i /><i /></div>
       <span className="section-number">SERVICE COMPLETE</span>
       <h1>You cooked that.</h1>
-      <p>Crispy Garden Tacos · 24 minutes</p>
+      <p>{activeRecipe ? `${activeRecipe.name} · ${activeRecipe.time}` : "Crispy Garden Tacos · 24 minutes"}</p>
       <div className="score-ring"><div><span>MEAL SCORE</span><strong>92</strong><small>/ 100</small></div></div>
-      <div className="glaze"><Icon name="spark" /><p><strong>“Restaurant energy.”</strong>Excellent color, clean cuts, and the crisp on those chickpeas is doing serious work.</p></div>
+      <div className="glaze"><Icon name="spark" /><p><strong>{activeRecipe ? "Nice work, chef." : "“Restaurant energy.”"}</strong>{activeRecipe ? `You made ${activeRecipe.name} from your kitchen scan.` : "Excellent color, clean cuts, and the crisp on those chickpeas is doing serious work."}</p></div>
       <section className="score-breakdown"><div><span>Technique</span><strong>+40</strong></div><div><span>Presentation</span><strong>+32</strong></div><div><span>Zero-waste bonus</span><strong>+20</strong></div></section>
       <div className="badge-unlock"><div><Icon name="chef" size={28} /></div><span><small>NEW BADGE</small><strong>Weeknight Wizard</strong><p>Cook 3 meals under 30 minutes</p></span></div>
       <BottomButton onClick={() => { setChecks([false, false, false, false]); setSelectedRecipe(null); go("home"); }}>Back to home</BottomButton>

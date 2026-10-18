@@ -72,6 +72,23 @@ path or use `--output` to choose a different file. Florence-2 detects general
 objects and reports their labels and bounding boxes, but does not provide the
 confidence scores or the five-class restriction of the trained YOLO model.
 
+### Run the website's photo scanner
+
+The React app uploads captured or selected JPEG, PNG, or WebP photos to a
+Florence-2 API. In one terminal from the repository root, install the
+dependencies above and start the API:
+
+```powershell
+py -3.12 -m pip install -r requirements-florence.txt
+py -3.12 -m uvicorn florence_api:app --host 0.0.0.0 --port 8000
+```
+
+Start the website from `Cooking Collaboration App` in another terminal using
+`pnpm dev`. The app connects to `http://localhost:8000`; set
+`VITE_FLORENCE_API_URL` if the API is hosted elsewhere. The first photo scan
+downloads and loads the model, and later scans reuse it. Photos are limited to
+10 MB and 40 megapixels.
+
 The saved token is picked up automatically by Hugging Face Hub. Authentication
 can help with unauthenticated-request limits, but it does not guarantee faster
 downloads; a stalled transfer may also be caused by network or cache issues.
