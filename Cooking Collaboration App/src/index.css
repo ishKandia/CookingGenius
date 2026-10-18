@@ -1,17 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
-  --ink: #20251f;
-  --muted: #6f756d;
-  --paper: #f6f2e9;
-  --white: #fffdf8;
-  --line: #ddd9cf;
-  --tomato: #ef5b3f;
-  --tomato-dark: #d8442b;
-  --herb: #375849;
-  --lime: #d9e99e;
-  font-family: "DM Sans", sans-serif;
+  --ink: #472309;
+  --muted: #805a38;
+  --paper: #fff3d2;
+  --white: #fffaf0;
+  --line: #e8bd78;
+  --tomato: #f79a1f;
+  --tomato-dark: #d96708;
+  --herb: #8d3b06;
+  --lime: #ffd15c;
+  font-family: "Nunito", sans-serif;
   color: var(--ink);
   background: #d9d9d2;
   font-synthesis: none;
@@ -33,8 +33,8 @@ button { color: inherit; cursor: pointer; }
 .icon-button:hover { background: #e9e5dc; }
 .avatar-button { padding: 0; border: 2px solid var(--white); box-shadow: 0 0 0 1px #d4d0c6; overflow: hidden; }
 .avatar-button img { width: 100%; height: 100%; object-fit: cover; }
-.brand { border: 0; background: transparent; font: 700 27px "Fraunces", serif; letter-spacing: -1px; }
-.brand i, .mini-brand i { color: var(--tomato); font-style: normal; }
+.brand { border: 0; background: transparent; width: 152px; height: 54px; display: grid; place-items: center; }
+.brand img { width: 100%; height: 100%; object-fit: contain; transform: translateY(-8px); }
 .notification-dot { width: 7px; height: 7px; background: var(--tomato); border: 2px solid var(--paper); border-radius: 50%; position: absolute; right: 8px; top: 8px; }
 
 .hero { margin: 0 16px; height: 354px; border-radius: 30px; overflow: hidden; position: relative; background: var(--herb); }
@@ -43,7 +43,7 @@ button { color: inherit; cursor: pointer; }
 .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, #10150fc9 100%); }
 .hero-copy { position: absolute; left: 24px; right: 24px; bottom: 38px; color: white; }
 .eyebrow, .section-number { font-size: 11px; font-weight: 700; letter-spacing: 1.7px; }
-.hero-copy h1 { font: 600 43px/1.02 "Fraunces", serif; letter-spacing: -1.6px; margin: 8px 0 0; max-width: 340px; }
+.hero-copy h1 { font: 600 43px/1.02 "Fredoka", serif; letter-spacing: -1.6px; margin: 8px 0 0; max-width: 340px; }
 .carousel-dots { position: absolute; bottom: 18px; left: 24px; display: flex; gap: 6px; }
 .carousel-dots button { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 5px; background: #ffffff70; transition: .3s; }
 .carousel-dots button.active { width: 22px; background: white; }
@@ -51,7 +51,7 @@ button { color: inherit; cursor: pointer; }
 .intro-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .intro-title p { font-weight: 700; margin: 0; }
 .intro-title span { font-size: 12px; color: var(--muted); }
-.home-intro h2 { font: 600 29px/1.12 "Fraunces", serif; letter-spacing: -.7px; margin: 0 0 10px; }
+.home-intro h2 { font: 600 29px/1.12 "Fredoka", serif; letter-spacing: -.7px; margin: 0 0 10px; }
 .home-intro > p { color: var(--muted); line-height: 1.55; margin: 0; font-size: 14px; }
 .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 22px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
 .quick-stats div { padding: 14px 10px 12px; text-align: center; border-right: 1px solid var(--line); }
@@ -62,6 +62,7 @@ button { color: inherit; cursor: pointer; }
 .quick-stats span { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
 .sticky-action { position: fixed; z-index: 20; bottom: 0; width: min(100%, 480px); padding: 16px 20px 20px; background: linear-gradient(0deg, var(--paper) 75%, transparent); }
+.home-screen .sticky-action { padding-inline: 22px; background: transparent; }
 .primary-button { width: 100%; border: 0; background: var(--tomato); color: white; height: 60px; border-radius: 17px; padding: 0 10px 0 22px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 20px #d8442b30; transition: transform .2s, background .2s; }
 .primary-button:hover:not(:disabled) { background: var(--tomato-dark); transform: translateY(-1px); }
 .primary-button > span { width: 42px; height: 42px; border-radius: 13px; background: #ffffff23; display: grid; place-items: center; }
@@ -71,7 +72,7 @@ button { color: inherit; cursor: pointer; }
 .drawer-layer, .modal-layer { position: fixed; z-index: 100; inset: 0; background: #171b17a8; max-width: 480px; margin: auto; backdrop-filter: blur(4px); animation: fade-in .2s; }
 .drawer { width: 88%; height: 100%; background: var(--white); padding: 18px; animation: slide-in .3s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; }
 .drawer-top { display: flex; justify-content: space-between; align-items: center; }
-.mini-brand { font: 700 27px "Fraunces"; padding-left: 8px; }
+.drawer-logo { width: 185px; height: 68px; object-fit: contain; object-position: left center; }
 .profile-card { background: var(--herb); color: white; border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 12px; margin: 22px 4px; }
 .profile-card img { width: 48px; height: 48px; object-fit: cover; border-radius: 50%; }
 .profile-card strong, .profile-card span { display: block; }
@@ -113,10 +114,10 @@ button { color: inherit; cursor: pointer; }
 
 .input-content, .chefs-content, .social-content, .calendar-content, .settings-content { padding: 34px 22px; }
 .section-number { color: var(--tomato); }
-.input-content h1, .chefs-content h1, .social-content h1, .settings-content h1 { font: 600 39px/1.04 "Fraunces"; letter-spacing: -1.2px; margin: 11px 0 10px; }
+.input-content h1, .chefs-content h1, .social-content h1, .settings-content h1 { font: 600 39px/1.04 "Fredoka"; letter-spacing: -1.2px; margin: 11px 0 10px; }
 .input-content > p, .chefs-content > p { color: var(--muted); font-size: 14px; line-height: 1.5; }
 .ingredient-box { border: 1px solid var(--line); border-radius: 20px; background: var(--white); margin-top: 28px; overflow: hidden; box-shadow: 0 7px 20px #272b2510; }
-.ingredient-box textarea { width: 100%; min-height: 235px; border: 0; resize: none; background: transparent; padding: 22px; font: 500 18px/1.75 "DM Sans"; outline: none; }
+.ingredient-box textarea { width: 100%; min-height: 235px; border: 0; resize: none; background: transparent; padding: 22px; font: 500 18px/1.75 "Nunito"; outline: none; }
 .ingredient-box > div { border-top: 1px solid var(--line); padding: 12px 15px; display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
 .ingredient-box button { border: 0; background: transparent; }
 .suggestion-row { display: flex; align-items: center; gap: 7px; margin-top: 14px; overflow: hidden; }
@@ -130,7 +131,7 @@ button { color: inherit; cursor: pointer; }
 
 .page-heading { display: flex; justify-content: space-between; align-items: flex-start; padding: 27px 22px 19px; }
 .page-heading .section-number { padding-top: 8px; }
-.page-heading h1 { font: 600 31px/1.05 "Fraunces"; max-width: 250px; margin: 0; text-align: right; }
+.page-heading h1 { font: 600 31px/1.05 "Fredoka"; max-width: 250px; margin: 0; text-align: right; }
 .page-heading p { text-align: right; color: var(--muted); font-size: 12px; margin: 6px 0; }
 .recipe-scroll { display: flex; overflow-x: auto; gap: 14px; padding: 0 22px 14px; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .recipe-card { min-width: 310px; scroll-snap-align: center; padding: 0; border: 1px solid var(--line); background: var(--white); text-align: left; border-radius: 24px; overflow: hidden; transition: .2s; }
@@ -141,7 +142,7 @@ button { color: inherit; cursor: pointer; }
 .recipe-image > i { position: absolute; right: 14px; top: 14px; width: 32px; height: 32px; border-radius: 50%; background: var(--tomato); color: white; display: grid; place-items: center; }
 .recipe-info { padding: 17px; }
 .recipe-info > span { color: var(--tomato); font-size: 9px; letter-spacing: 1px; font-weight: 700; }
-.recipe-info h2 { font: 600 25px "Fraunces"; margin: 5px 0 10px; }
+.recipe-info h2 { font: 600 25px "Fredoka"; margin: 5px 0 10px; }
 .recipe-info > div { display: flex; gap: 17px; }
 .recipe-info p { display: flex; gap: 5px; align-items: center; margin: 0; color: var(--muted); font-size: 11px; }
 .recipe-info small { display: block; color: #a09f99; font-size: 9px; margin-top: 13px; }
@@ -150,7 +151,7 @@ button { color: inherit; cursor: pointer; }
 .party-panel { border-top: 1px solid var(--line); padding: 19px 22px 95px; }
 .party-title { display: flex; justify-content: space-between; align-items: center; }
 .party-title span { font-size: 9px; letter-spacing: 1.2px; color: var(--muted); }
-.party-title h3 { font: 600 23px "Fraunces"; margin: 2px 0; }
+.party-title h3 { font: 600 23px "Fredoka"; margin: 2px 0; }
 .chef-faces { display: flex; align-items: center; }
 .chef-faces img, .chef-faces > div { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--paper); object-fit: cover; display: grid; place-items: center; background: #e7b875; font-size: 10px; margin-left: -6px; }
 .chef-faces strong { margin-left: 7px; font-size: 13px; }
@@ -164,7 +165,7 @@ button { color: inherit; cursor: pointer; }
 .sheet-handle { display: block; width: 40px; height: 4px; background: #d0cec7; border-radius: 4px; margin: 0 auto 20px; }
 .sheet-heading { display: flex; align-items: flex-start; justify-content: space-between; }
 .sheet-heading span { color: var(--tomato); font-size: 9px; letter-spacing: 1.3px; font-weight: 700; }
-.sheet-heading h2, .detail-modal h2 { font: 600 30px "Fraunces"; margin: 3px 0 18px; }
+.sheet-heading h2, .detail-modal h2 { font: 600 30px "Fredoka"; margin: 3px 0 18px; }
 .sheet-heading button, .detail-modal > button { border: 0; background: #efede7; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; }
 .filter-group { border-top: 1px solid var(--line); padding: 17px 0; }
 .filter-group > p { font-size: 9px; letter-spacing: 1.2px; font-weight: 700; color: var(--muted); }
@@ -183,7 +184,7 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 
 .roster { margin-top: 27px; display: flex; flex-direction: column; gap: 10px; }
 .roster-item { display: flex; align-items: center; padding: 13px; background: var(--white); border: 1px solid var(--line); border-radius: 17px; gap: 12px; }
-.position { font: 600 12px "Fraunces"; color: #aaa79e; }
+.position { font: 600 12px "Fredoka"; color: #aaa79e; }
 .roster-item img, .initial-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #bfd1a4; display: grid; place-items: center; font-size: 11px; font-weight: 700; }
 .roster-item div:nth-of-type(1) { flex: 1; }
 .roster-item strong, .roster-item small { display: block; }
@@ -202,7 +203,7 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .copy-link { justify-content: center; margin: 18px 0; border: 1px solid var(--line); border-radius: 14px; font-weight: 600; font-size: 12px; }
 
 .instruction-top { padding: 34px 22px 24px; }
-.instruction-top h1 { font: 600 39px/1.05 "Fraunces"; margin: 8px 0; }
+.instruction-top h1 { font: 600 39px/1.05 "Fredoka"; margin: 8px 0; }
 .instruction-top p { color: var(--muted); margin: 0; }
 .task-owner { padding: 12px 22px; display: flex; align-items: center; justify-content: space-between; border-block: 1px solid var(--line); background: var(--white); }
 .task-owner > div { display: flex; align-items: center; gap: 10px; }
@@ -213,8 +214,8 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .task-owner > span { font-size: 11px; color: var(--muted); }
 .task-preview-list { padding: 10px 22px; }
 .task-preview-list article { display: grid; grid-template-columns: 38px 1fr; gap: 10px; padding: 18px 0; border-bottom: 1px solid var(--line); }
-.task-preview-list article > span { font: 600 16px "Fraunces"; color: var(--tomato); }
-.task-preview-list h2 { font: 600 21px "Fraunces"; margin: 0; }
+.task-preview-list article > span { font: 600 16px "Fredoka"; color: var(--tomato); }
+.task-preview-list h2 { font: 600 21px "Fredoka"; margin: 0; }
 .task-preview-list p { color: var(--muted); font-size: 12px; margin: 5px 0 8px; }
 .task-preview-list small { display: flex; gap: 5px; align-items: center; color: var(--muted); font-size: 10px; }
 .task-preview-list b { display: flex; align-items: center; gap: 4px; color: var(--tomato); margin-left: 10px; font-weight: 600; }
@@ -230,10 +231,10 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .progress-track span { display: block; height: 100%; background: var(--tomato); transition: .3s; }
 .active-task { padding: 27px 22px; }
 .task-label { display: grid; grid-template-columns: 45px 1fr auto; align-items: center; }
-.task-label > span { font: 600 30px "Fraunces"; color: var(--tomato); }
+.task-label > span { font: 600 30px "Fredoka"; color: var(--tomato); }
 .task-label small, .task-label strong { display: block; }
 .task-label small { font-size: 8px; letter-spacing: 1px; color: var(--muted); }
-.task-label strong { font: 600 24px "Fraunces"; margin-top: 3px; }
+.task-label strong { font: 600 24px "Fredoka"; margin-top: 3px; }
 .task-label p { font-size: 9px; background: #e8e4da; padding: 7px 9px; border-radius: 10px; }
 .tip { display: flex; gap: 10px; background: #edf1dc; border-radius: 15px; padding: 14px; margin: 22px 0; }
 .tip svg { color: #71813f; flex: none; }
@@ -251,17 +252,17 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 
 .summary-screen { background: var(--herb); color: white; text-align: center; padding: 54px 22px 30px; position: relative; }
 .summary-screen .section-number { color: var(--lime); }
-.summary-screen h1 { font: 600 43px "Fraunces"; margin: 8px 0 4px; }
+.summary-screen h1 { font: 600 43px "Fredoka"; margin: 8px 0 4px; }
 .summary-screen > p { opacity: .65; font-size: 12px; }
 .score-ring { width: 210px; height: 210px; border-radius: 50%; margin: 28px auto 22px; background: conic-gradient(var(--lime) 0 92%, #ffffff20 92%); padding: 8px; }
 .score-ring > div { height: 100%; border-radius: 50%; background: var(--herb); display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; align-content: center; }
 .score-ring span { width: 100%; font-size: 9px; letter-spacing: 1.2px; opacity: .7; }
-.score-ring strong { font: 600 65px "Fraunces"; }
+.score-ring strong { font: 600 65px "Fredoka"; }
 .score-ring small { opacity: .5; }
 .glaze { display: flex; text-align: left; gap: 12px; background: #ffffff10; border: 1px solid #ffffff17; border-radius: 17px; padding: 15px; }
 .glaze svg { color: var(--lime); flex: none; }
 .glaze p { font-size: 11px; line-height: 1.5; margin: 0; opacity: .8; }
-.glaze strong { color: white; display: block; font: 600 17px "Fraunces"; margin-bottom: 2px; }
+.glaze strong { color: white; display: block; font: 600 17px "Fredoka"; margin-bottom: 2px; }
 .score-breakdown { margin: 16px 0; border-block: 1px solid #ffffff1f; padding: 7px 0; }
 .score-breakdown div { display: flex; justify-content: space-between; font-size: 12px; padding: 7px 3px; }
 .score-breakdown span { opacity: .65; }
@@ -270,7 +271,7 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .badge-unlock > div { width: 49px; height: 49px; border-radius: 50%; background: var(--herb); color: var(--lime); display: grid; place-items: center; }
 .badge-unlock small, .badge-unlock strong, .badge-unlock p { display: block; margin: 0; }
 .badge-unlock small { font-size: 8px; letter-spacing: 1px; color: #687538; }
-.badge-unlock strong { font: 600 17px "Fraunces"; }
+.badge-unlock strong { font: 600 17px "Fredoka"; }
 .badge-unlock p { font-size: 9px; color: var(--muted); margin-top: 2px; }
 .summary-screen .primary-button { background: white; color: var(--ink); box-shadow: none; }
 .summary-screen .primary-button > span { background: var(--paper); }
@@ -289,20 +290,20 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .color-1 { background: #f0c29f; }.color-2 { background: #c4cce6; }
 .leaderboard-head { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; }
 .leaderboard-head span { font-size: 8px; color: var(--tomato); font-weight: 700; letter-spacing: 1px; }
-.leaderboard-head h2 { font: 600 28px "Fraunces"; margin: 2px 0; }
+.leaderboard-head h2 { font: 600 28px "Fredoka"; margin: 2px 0; }
 .leaderboard-head select { border: 1px solid var(--line); background: var(--white); padding: 8px; border-radius: 10px; font-size: 10px; }
 .podium { height: 185px; margin-top: 14px; background: var(--herb); border-radius: 21px; display: flex; align-items: flex-end; justify-content: center; padding: 20px 12px; color: white; }
 .podium > div { width: 30%; text-align: center; position: relative; }
 .podium .initial-avatar { margin: 5px auto; border: 2px solid white; color: var(--ink); }
 .podium strong, .podium small { display: block; font-size: 10px; }
 .podium small { color: var(--lime); margin-top: 3px; }
-.podium > div > span { font: 600 17px "Fraunces"; opacity: .7; }
+.podium > div > span { font: 600 17px "Fredoka"; opacity: .7; }
 .podium .winner { transform: translateY(-20px); }
 .podium .winner > svg { color: var(--lime); margin: auto; }
 .podium .winner .initial-avatar { width: 56px; height: 56px; background: var(--lime); }
 
 .calendar-title { display: flex; justify-content: space-between; align-items: center; margin: 10px 0 24px; }
-.calendar-title h1 { font: 600 35px "Fraunces"; margin: 0; }
+.calendar-title h1 { font: 600 35px "Fredoka"; margin: 0; }
 .calendar-title div { display: flex; gap: 5px; }
 .calendar-title button { border: 1px solid var(--line); background: var(--white); border-radius: 50%; width: 35px; height: 35px; display: grid; place-items: center; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); }
@@ -316,7 +317,7 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .month-card div + div { border-left: 1px solid #ffffff25; padding-left: 17px; }
 .month-card span, .month-card strong { display: block; }
 .month-card span { font-size: 8px; opacity: .6; letter-spacing: 1px; }
-.month-card strong { font: 600 22px "Fraunces"; margin-top: 3px; }
+.month-card strong { font: 600 22px "Fredoka"; margin-top: 3px; }
 
 .edit-avatar { position: relative; width: 92px; margin: 25px auto; }
 .edit-avatar img { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; }
@@ -331,11 +332,204 @@ input[type="checkbox"] { accent-color: var(--herb); width: 18px; height: 18px; }
 .setting-row:last-child { border-bottom: 0; }
 .delete-account { width: 100%; margin-top: 30px; border: 1px solid #efb5a9; color: var(--tomato-dark); background: #fff3ef; border-radius: 14px; height: 50px; font-weight: 600; font-size: 12px; }
 
+/* Cooking Genius theme */
+h1, h2, h3, .hero-copy h1, .home-intro h2, .page-heading h1,
+.recipe-info h2, .party-title h3, .sheet-heading h2, .detail-modal h2,
+.instruction-top h1, .task-preview-list h2, .task-label strong,
+.summary-screen h1, .glaze strong, .badge-unlock strong,
+.leaderboard-head h2, .calendar-title h1, .month-card strong {
+  font-family: "Fredoka", sans-serif;
+  font-weight: 700;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 18%, #ffd160 0 3%, transparent 3.4%),
+    radial-gradient(circle at 88% 72%, #ee7b0b 0 4%, transparent 4.4%),
+    #f8a51f;
+}
+.app-shell {
+  border-inline: 3px solid #7c3105;
+  background: var(--paper);
+  box-shadow: 0 0 0 7px #bd5608, 0 25px 80px #59200055;
+}
+.screen, .pale-screen, .secondary-header { background: var(--paper); }
+.app-header {
+  height: 86px;
+  background: #ffbd38;
+  border-bottom: 3px solid #8d3b06;
+  box-shadow: 0 5px 0 #d66a0c;
+}
+.secondary-header {
+  border-bottom: 3px solid var(--herb);
+  box-shadow: 0 4px 0 #e58a18;
+}
+.avatar-button {
+  border: 3px solid var(--herb);
+  box-shadow: 0 3px 0 #c25b09;
+}
+.icon-button {
+  background: #fff4ce;
+  border: 2px solid var(--herb);
+  box-shadow: 0 3px 0 #c25b09;
+}
+.icon-button:hover { background: #ffe097; transform: translateY(1px); box-shadow: 0 2px 0 #c25b09; }
+.notification-dot { background: #65a94e; border-color: #ffbd38; }
+.hero {
+  margin-top: 12px;
+  border: 4px solid var(--herb);
+  border-radius: 28px;
+  box-shadow: 0 7px 0 #c05b0a;
+}
+.hero-shade { background: linear-gradient(180deg, transparent 28%, #4a1d06d9 100%); }
+.hero-copy .eyebrow {
+  display: inline-block;
+  color: var(--ink);
+  background: var(--lime);
+  border: 2px solid var(--herb);
+  border-radius: 999px;
+  padding: 6px 10px;
+  text-shadow: none;
+}
+.hero-copy h1 { text-shadow: 0 3px 0 #5b2709; }
+.carousel-dots button { border: 1px solid var(--herb); background: #ffe4a2; }
+.carousel-dots button.active { background: #f79a1f; }
+.section-number { color: #c65307; }
+.quick-stats {
+  border: 2px solid var(--herb);
+  border-radius: 20px;
+  background: #fff9e9;
+  box-shadow: 0 5px 0 #e3a044;
+}
+.quick-stats div { border-color: #e5b565; }
+.level-card {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 11px;
+  align-items: center;
+  margin-top: 16px;
+  padding: 12px;
+  border: 2px solid var(--herb);
+  border-radius: 18px;
+  background: #ffcf59;
+  box-shadow: 0 5px 0 #d96a0d;
+}
+.level-icon {
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--herb);
+  border-radius: 14px;
+  background: var(--tomato);
+  display: grid;
+  place-items: center;
+  color: var(--white);
+  transform: rotate(-4deg);
+}
+.level-card span, .level-card strong { display: block; }
+.level-card span { color: #9b4105; font-size: 9px; font-weight: 800; letter-spacing: .8px; }
+.level-card strong { font: 600 11px "Nunito"; margin: 3px 0 5px; }
+.level-card i { display: block; width: 100%; height: 6px; border: 1px solid var(--herb); border-radius: 6px; background: #fff4cb; overflow: hidden; }
+.level-card i b { display: block; width: 62%; height: 100%; background: #65a94e; }
+.level-card em { font: 700 18px "Fredoka"; font-style: normal; color: #8d3b06; }
+.primary-button {
+  height: 62px;
+  color: var(--ink);
+  background: linear-gradient(#ffb52d, #f79316);
+  border: 3px solid var(--herb);
+  border-radius: 19px;
+  box-shadow: 0 6px 0 #9a3d04, 0 11px 20px #8e3b1328;
+  font-family: "Fredoka", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+.primary-button:hover:not(:disabled) { color: var(--ink); background: #ffad22; transform: translateY(2px); box-shadow: 0 4px 0 #9a3d04; }
+.primary-button > span { color: white; background: var(--herb); border: 2px solid #642503; }
+.primary-button:disabled { color: #8b735b; background: #dfcfac; border-color: #8b735b; box-shadow: 0 5px 0 #a58d71; }
+.sticky-action { background: linear-gradient(0deg, var(--paper) 78%, transparent); }
+.drawer { background: #fff5d9; border-right: 4px solid var(--herb); }
+.profile-card {
+  color: var(--ink);
+  background: #ffbf3e;
+  border: 3px solid var(--herb);
+  box-shadow: 0 5px 0 #c25708;
+}
+.drawer nav button { font-weight: 700; }
+.drawer nav button:hover { background: #ffdda0; }
+.drawer-streak { background: #ffdb72; border: 2px solid var(--herb); }
+.drawer-streak svg { color: #b14b07; }
+.input-actions { background: var(--paper); }
+.input-actions .input-toggle { background: #e7bd75; }
+.ingredient-box, .recipe-card, .roster-item, .task-owner,
+.checklist > button, .settings-group, .form-field input {
+  border: 2px solid var(--herb);
+  box-shadow: 0 5px 0 #df9a3f;
+}
+.recipe-card.selected {
+  border: 4px solid #f1860e;
+  box-shadow: 0 7px 0 #8d3b06;
+}
+.recipe-image > span, .host-pill {
+  color: var(--ink);
+  border: 2px solid var(--herb);
+  background: #ffcf59;
+}
+.filter-button, .outline-button, .add-chef-card, .copy-link {
+  border: 2px solid var(--herb);
+  color: var(--ink);
+  background: #fff9e9;
+  box-shadow: 0 4px 0 #df9a3f;
+  font-weight: 800;
+}
+.filter-button span, .extra-prompt button, .chip-row button.selected { background: var(--herb); }
+.bottom-sheet, .detail-modal {
+  background: #fff5d9;
+  border: 3px solid var(--herb);
+  box-shadow: 0 -7px 0 #c25708;
+}
+input[type="checkbox"] { accent-color: #ef8510; }
+.task-header {
+  background: #733005;
+  border-bottom: 4px solid #f7941d;
+}
+.progress-track { background: #e7b75d; }
+.progress-track span { background: #65a94e; }
+.tip {
+  background: #ffdb72;
+  border: 2px solid var(--herb);
+  box-shadow: 0 4px 0 #df9a3f;
+}
+.tip svg { color: #b84d06; }
+.checklist > button.done { background: #d8e99a; border-color: #365f28; box-shadow: 0 5px 0 #88a552; }
+.done .check-circle { background: #65a94e; border-color: #365f28; }
+.summary-screen {
+  color: #fff9df;
+  background:
+    radial-gradient(circle at 18% 12%, #f99d1e 0 4px, transparent 5px),
+    radial-gradient(circle at 82% 24%, #ffca4a 0 5px, transparent 6px),
+    #6b2904;
+}
+.summary-screen .section-number, .glaze svg, .score-breakdown strong { color: #ffc643; }
+.score-ring { background: conic-gradient(#f79a1f 0 92%, #ffffff20 92%); border: 4px solid #ffca4a; box-shadow: 0 7px 0 #391400; }
+.score-ring > div { background: #6b2904; }
+.glaze { background: #8c3c08; border: 2px solid #f79a1f; box-shadow: 0 5px 0 #391400; }
+.badge-unlock { background: #ffbf3e; border: 3px solid #3f1802; box-shadow: 0 5px 0 #391400; }
+.badge-unlock > div { color: #ffca4a; background: #6b2904; }
+.summary-screen .primary-button { color: var(--ink); background: #ffb52d; border-color: #3f1802; box-shadow: 0 6px 0 #391400; }
+.podium, .month-card { background: #773005; border: 3px solid #f28c13; box-shadow: 0 6px 0 #4b1c02; }
+.podium small { color: #ffcf59; }
+.podium .winner .initial-avatar { background: #ffbf3e; }
+.calendar-grid > button.today::before, .edit-avatar button { background: #f18a12; }
+
 @keyframes slide-in { from { transform: translateX(-100%); } }
 @keyframes fade-in { from { opacity: 0; } }
 @keyframes rise { from { transform: translateY(100%); } }
 @media (min-width: 700px) {
-  body { background: radial-gradient(circle at 20% 10%, #f1ddc9, transparent 30%), radial-gradient(circle at 85% 80%, #bccbbb, transparent 35%), #e7e4dc; }
+  body {
+    background:
+      radial-gradient(circle at 20% 10%, #ffc84c, transparent 30%),
+      radial-gradient(circle at 85% 80%, #d45f08, transparent 35%),
+      #f39a17;
+  }
   .app-shell { margin: 24px auto; min-height: calc(100vh - 48px); border-radius: 30px; }
   .screen, .camera-screen { min-height: calc(100vh - 48px); }
   .sticky-action, .input-actions { bottom: 24px; }

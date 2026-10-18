@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import cookingGeniusLogo from "./assets/cooking-genius-logo.png";
 
 type Screen =
   | "home"
@@ -113,7 +114,7 @@ function AppHeader({ openMenu, goSocial }: { openMenu: () => void; goSocial: () 
         <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="" />
       </button>
       <button className="brand" onClick={openMenu} aria-label="Open menu">
-        <span>mise</span><i>.</i>
+        <img src={cookingGeniusLogo} alt="Cooking Genius" />
       </button>
       <button className="icon-button" onClick={goSocial} aria-label="Friends">
         <Icon name="users" />
@@ -160,7 +161,7 @@ function Drawer({ close, go }: { close: () => void; go: (screen: Screen) => void
     <div className="drawer-layer" onClick={close}>
       <aside className="drawer" onClick={(event) => event.stopPropagation()}>
         <div className="drawer-top">
-          <div className="mini-brand">mise<i>.</i></div>
+          <img className="drawer-logo" src={cookingGeniusLogo} alt="Cooking Genius" />
           <button className="icon-button" onClick={close} aria-label="Close menu"><Icon name="close" /></button>
         </div>
         <div className="profile-card">
@@ -222,7 +223,12 @@ export default function App() {
       <section className="home-intro">
         <div className="intro-title"><p>Tonight’s plan</p><span>Tuesday, 6:14 PM</span></div>
         <h2>Turn what’s in your kitchen into something worth sharing.</h2>
-        <p>Scan your ingredients, pick a recipe, and let Mise split the work.</p>
+        <p>Scan your ingredients, pick a recipe, and let Cooking Genius split the work.</p>
+        <div className="level-card">
+          <div className="level-icon"><Icon name="spark" /></div>
+          <div><span>LEVEL 12 · KITCHEN WHIZ</span><strong>760 XP to your next reward</strong><i><b /></i></div>
+          <em>1,240</em>
+        </div>
         <div className="quick-stats">
           <div><Icon name="clock" /><strong>25 min</strong><span>average cook</span></div>
           <div><Icon name="spark" /><strong>1,240</strong><span>total points</span></div>
@@ -311,7 +317,7 @@ export default function App() {
   const Instructions = () => (
     <main className="screen instructions-screen">
       <SecondaryHeader title="Task preview" back={() => go("recipes")} />
-      <section className="instruction-top"><span className="section-number">READY, SET, MISE</span><h1>Here’s your game plan.</h1><p>{chefCount > 1 ? "Two chefs. Three jobs. Dinner in 25." : "Three simple jobs. Dinner in 25."}</p></section>
+      <section className="instruction-top"><span className="section-number">READY, SET, COOK</span><h1>Here’s your game plan.</h1><p>{chefCount > 1 ? "Two chefs. Three jobs. Dinner in 25." : "Three simple jobs. Dinner in 25."}</p></section>
       <div className="task-owner"><div><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="" /><span><small>YOUR TASKS</small><strong>Maya</strong></span></div><span>1 of {chefCount}</span></div>
       <section className="task-preview-list">
         {[["01", "Prep the vegetables", "8 min", "Slice peppers and onion into even strips."], ["02", "Build the lime crema", "4 min", "Mix, season, taste, and adjust."], ["03", "Warm & assemble", "10 min", "Bring every part together."]].map((task, index) => <article key={task[0]}><span>{task[0]}</span><div><h2>{task[1]}</h2><p>{task[3]}</p><small><Icon name="clock" size={15} /> {task[2]}{index === 0 && <b><Icon name="camera" size={14} /> Photo check</b>}</small></div></article>)}
@@ -339,7 +345,7 @@ export default function App() {
         <div className="progress-track"><span style={{ width: `${checks.filter(Boolean).length * 25}%` }} /></div>
         <section className="active-task">
           <div className="task-label"><span>01</span><div><small>ACTIVE TASK</small><strong>Prep the vegetables</strong></div><p>8 MIN</p></div>
-          <div className="tip"><Icon name="spark" /><p><strong>Mise tip</strong>Even pieces cook at the same speed. Slow down now, save time later.</p></div>
+          <div className="tip"><Icon name="spark" /><p><strong>Genius tip</strong>Even pieces cook at the same speed. Slow down now, save time later.</p></div>
           <div className="checklist">
             {taskRows.map((row, index) => {
               const locked = index > 0 && !checks[index - 1];
