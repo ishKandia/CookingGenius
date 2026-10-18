@@ -84,10 +84,18 @@ py -3.12 -m uvicorn florence_api:app --host 0.0.0.0 --port 8000
 ```
 
 Start the website from `Cooking Collaboration App` in another terminal using
-`pnpm dev`. The app connects to `http://localhost:8000`; set
-`VITE_FLORENCE_API_URL` if the API is hosted elsewhere. The first photo scan
-downloads and loads the model, and later scans reuse it. Photos are limited to
-10 MB and 40 megapixels.
+`pnpm dev`. In development the app connects to `http://localhost:8000`.
+
+For a static website deployment, the Florence API must also be hosted at a
+public HTTPS address; it cannot be included in the frontend `dist` bundle.
+Before or after uploading `dist`, edit `florence-config.js` and set
+`florenceApiUrl` to the API's base URL (for example,
+`https://api.example.com`). Configure the API's `FLORENCE_ALLOWED_ORIGINS`
+environment variable to include the website's exact origin, then rebuild if
+you edited the source copy before building. The website reports a setup message
+if a production build has no API URL configured. The first photo scan downloads
+and loads the model, and later scans reuse it. Photos are limited to 10 MB and
+40 megapixels.
 
 The saved token is picked up automatically by Hugging Face Hub. Authentication
 can help with unauthenticated-request limits, but it does not guarantee faster

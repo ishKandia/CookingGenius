@@ -222,7 +222,11 @@ function getMealBenefits(recipe: Recipe | null): string[] {
   return benefits;
 }
 
-const florenceApiUrl = import.meta.env.VITE_FLORENCE_API_URL ?? "http://localhost:8000";
+const florenceApiUrl = (
+  window.COOKINGGENIUS_CONFIG?.florenceApiUrl?.trim()
+  || import.meta.env.VITE_FLORENCE_API_URL?.trim()
+  || (import.meta.env.DEV ? "http://localhost:8000" : "")
+).replace(/\/+$/, "");
 const maxImageSize = 10 * 1024 * 1024;
 
 const Icon = ({ name, size = 22 }: { name: IconName; size?: number }) => {
@@ -361,6 +365,10 @@ export default function App() {
     }
     if (file.size > maxImageSize) {
       setScanError("That photo is too large. Choose an image under 10 MB.");
+      return;
+    }
+    if (!florenceApiUrl) {
+      setScanError("The Florence scanner is not configured for this website. Set florenceApiUrl in florence-config.js to your hosted API address.");
       return;
     }
 
