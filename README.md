@@ -49,7 +49,9 @@ threshold with `--conf`. The model detects only the five classes in
 ## Florence-2 object detection
 
 Florence-2's custom model code is compatible with Transformers 4.45.2; newer
-releases can break Florence-2 generation.
+releases can break Florence-2 generation. The repository pins Python 3.12.10
+in `.python-version`; keep Render's service root set to the repository root so
+it uses this version instead of its Python 3.14 default.
 Create a **Read** access token at
 <https://huggingface.co/settings/tokens>, then authenticate locally. This
 interactive prompt stores the token in your Hugging Face user cache; do not put
