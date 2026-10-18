@@ -45,3 +45,33 @@ After training, use the fine-tuned five-class model:
 The annotated result is saved as `detected.jpg`. Adjust the confidence
 threshold with `--conf`. The model detects only the five classes in
 `food.yaml`; spinach requires labeled spinach examples and a new training run.
+
+## Florence-2 object detection
+
+Florence-2's custom model code is compatible with Transformers 4.45.2; newer
+releases can break Florence-2 generation.
+Create a **Read** access token at
+<https://huggingface.co/settings/tokens>, then authenticate locally. This
+interactive prompt stores the token in your Hugging Face user cache; do not put
+the token in source files or share it:
+
+```powershell
+py -3.12 -c "from huggingface_hub import login; login()"
+```
+
+Install Florence-2's dependencies and run the detector from the repository
+root:
+
+```powershell
+py -3.12 -m pip install -r requirements-florence.txt
+py -3.12 florence.py vegetables.jpg
+```
+
+The annotated image is saved as `florence-detected.jpg`; pass another image
+path or use `--output` to choose a different file. Florence-2 detects general
+objects and reports their labels and bounding boxes, but does not provide the
+confidence scores or the five-class restriction of the trained YOLO model.
+
+The saved token is picked up automatically by Hugging Face Hub. Authentication
+can help with unauthenticated-request limits, but it does not guarantee faster
+downloads; a stalled transfer may also be caused by network or cache issues.
