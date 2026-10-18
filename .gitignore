@@ -10,3 +10,6 @@ __pycache__/
 
 # Generated outputs
 runs/
+
+# Generated filtered dataset (images are hard-linked from the source export)
+target-vegetables/

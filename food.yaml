@@ -1,0 +1,10 @@
+path: target-vegetables
+train: images/train
+val: images/val
+
+names:
+  0: tomato
+  1: broccoli
+  2: carrot
+  3: bell_pepper
+  4: cucumber
