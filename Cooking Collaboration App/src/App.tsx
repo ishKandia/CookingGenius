@@ -6,18 +6,14 @@ type Screen =
   | "camera"
   | "text"
   | "recipes"
-  | "chefs"
   | "instructions"
   | "tasks"
   | "summary"
-  | "social"
   | "calendar"
-  | "account"
   | "settings";
 
 type IconName =
   | "menu"
-  | "users"
   | "arrow"
   | "camera"
   | "text"
@@ -27,6 +23,8 @@ type IconName =
   | "filter"
   | "lock"
   | "check"
+  | "flame"
+  | "star"
   | "copy"
   | "home"
   | "calendar"
@@ -63,6 +61,7 @@ type Recipe = {
   ingredients: string[];
   description: string;
   method: string;
+  steps: { title: string; instruction: string; duration: string }[];
 };
 
 const recipes: Recipe[] = [
@@ -75,6 +74,13 @@ const recipes: Recipe[] = [
     ingredients: ["bell pepper", "red onion", "chickpeas", "tortillas", "lime"],
     description: "Charred vegetables, crispy chickpeas, lime crema, and warm tortillas. Fast, flexible, and built for sharing.",
     method: "Slice the vegetables and sauté until tender with browned edges. Crisp the chickpeas in the pan, warm the tortillas, then fill and finish with lime.",
+    steps: [
+      { title: "Prep the vegetables", instruction: "Slice the bell pepper and red onion into even strips.", duration: "5 min" },
+      { title: "Crisp the chickpeas", instruction: "Warm a little oil in a pan and cook the chickpeas until golden and crisp.", duration: "6 min" },
+      { title: "Sauté the vegetables", instruction: "Add the pepper and onion to the pan and cook until tender with browned edges.", duration: "7 min" },
+      { title: "Warm the tortillas", instruction: "Warm the tortillas in a dry pan until soft and lightly toasted.", duration: "3 min" },
+      { title: "Assemble and serve", instruction: "Fill each tortilla, finish with lime, and serve while warm.", duration: "4 min" },
+    ],
   },
   {
     name: "Golden Veggie Bowl",
@@ -85,6 +91,13 @@ const recipes: Recipe[] = [
     ingredients: ["seasonal vegetables", "rice", "olive oil", "lemon"],
     description: "A quick grain bowl with warm vegetables and a bright, simple dressing.",
     method: "Cook the rice. Sauté chopped vegetables in olive oil until tender, then serve over rice with lemon and seasoning.",
+    steps: [
+      { title: "Rinse the rice", instruction: "Rinse the rice under cool water until the water runs mostly clear.", duration: "2 min" },
+      { title: "Cook the rice", instruction: "Cook the rice according to its package directions.", duration: "15 min" },
+      { title: "Chop the vegetables", instruction: "Cut the vegetables into bite-size pieces so they cook evenly.", duration: "4 min" },
+      { title: "Sauté the vegetables", instruction: "Heat olive oil in a pan and cook the vegetables until tender.", duration: "8 min" },
+      { title: "Dress and serve", instruction: "Spoon the vegetables over rice and finish with lemon and seasoning.", duration: "2 min" },
+    ],
   },
   {
     name: "Pantry Crunch Plate",
@@ -95,6 +108,13 @@ const recipes: Recipe[] = [
     ingredients: ["seasonal vegetables", "beans", "bread or grains", "pantry seasoning"],
     description: "A flexible, low-waste plate for using up vegetables and pantry staples.",
     method: "Roast or pan-sear chopped vegetables until golden. Add warmed beans and serve with bread or grains.",
+    steps: [
+      { title: "Preheat the oven", instruction: "Heat the oven to 425°F (220°C), or warm a large pan over medium heat.", duration: "5 min" },
+      { title: "Prepare the vegetables", instruction: "Chop the vegetables into similar-sized pieces.", duration: "5 min" },
+      { title: "Season and cook", instruction: "Toss the vegetables with oil and seasoning, then roast or pan-sear until golden.", duration: "18 min" },
+      { title: "Warm the beans", instruction: "Warm the beans in a small pan or add them to the vegetables for the last few minutes.", duration: "4 min" },
+      { title: "Plate the meal", instruction: "Serve the vegetables and beans with bread or cooked grains.", duration: "3 min" },
+    ],
   },
 ];
 
@@ -103,6 +123,11 @@ type FoodScan = {
   imageUrl: string;
   imageSize: { width: number; height: number };
   detections: FoodDetection[];
+};
+type CookResult = {
+  score: number;
+  completed_steps: number;
+  total_steps: number;
 };
 
 function generateRecipes(detections: FoodDetection[]): Recipe[] {
@@ -128,6 +153,13 @@ function generateRecipes(detections: FoodDetection[]): Recipe[] {
       ingredients: ingredientList,
       description: `A simple one-pan idea featuring ${featured.join(", ")}.`,
       method: `Chop the detected ingredients into bite-size pieces. Warm a little oil in a skillet, cook the firmest ingredients first, then add the rest and sauté until tender. Season to taste.`,
+      steps: [
+        { title: "Prepare the ingredients", instruction: `Wash and chop ${featured.join(", ")} into bite-size pieces.`, duration: "5 min" },
+        { title: "Heat the skillet", instruction: "Warm a little oil in a skillet over medium heat.", duration: "2 min" },
+        { title: "Cook the firm ingredients", instruction: "Add the firmest chopped ingredients first and cook until they begin to soften.", duration: "6 min" },
+        { title: "Finish cooking", instruction: "Add the remaining ingredients and sauté until everything is tender.", duration: "6 min" },
+        { title: "Season and serve", instruction: "Season to taste and serve warm.", duration: "1 min" },
+      ],
     },
     {
       name: `${first}${second ? ` & ${second}` : ""} Roast Bowl`,
@@ -138,6 +170,13 @@ function generateRecipes(detections: FoodDetection[]): Recipe[] {
       ingredients: [...featured, "grains or bread", "oil", "salt", "pepper"],
       description: `A flexible roasted bowl built around ${featured.join(", ")}.`,
       method: `Cut the detected ingredients into similar-sized pieces, toss with oil, salt, and pepper, then roast at 425°F (220°C) until tender and browned. Serve with cooked grains or bread.`,
+      steps: [
+        { title: "Preheat the oven", instruction: "Heat the oven to 425°F (220°C).", duration: "5 min" },
+        { title: "Prepare the ingredients", instruction: `Cut ${featured.join(", ")} into similar-sized pieces.`, duration: "5 min" },
+        { title: "Season the vegetables", instruction: "Toss with oil, salt, and pepper until evenly coated.", duration: "2 min" },
+        { title: "Roast until golden", instruction: "Spread on a baking sheet and roast until tender and browned.", duration: "20 min" },
+        { title: "Build the bowl", instruction: "Serve the roasted ingredients with cooked grains or bread.", duration: "3 min" },
+      ],
     },
     {
       name: `${first} Pantry Soup`,
@@ -148,8 +187,39 @@ function generateRecipes(detections: FoodDetection[]): Recipe[] {
       ingredients: [...featured, "broth or water", "onion or garlic", "oil"],
       description: `A cozy soup suggestion using ${featured.join(", ")} and basic pantry staples.`,
       method: `Soften onion or garlic in a little oil if available. Add chopped detected ingredients and enough broth or water to cover. Simmer until everything is tender, then season to taste.`,
+      steps: [
+        { title: "Prepare the ingredients", instruction: `Chop ${featured.join(", ")} into bite-size pieces.`, duration: "5 min" },
+        { title: "Soften aromatics", instruction: "Warm a little oil in a pot and soften onion or garlic if available.", duration: "4 min" },
+        { title: "Add the vegetables", instruction: "Stir in the chopped ingredients and cook for a few minutes.", duration: "4 min" },
+        { title: "Add broth and simmer", instruction: "Pour in enough broth or water to cover, then simmer until the vegetables are tender.", duration: "18 min" },
+        { title: "Season the soup", instruction: "Taste and adjust with salt, pepper, or other pantry seasoning.", duration: "2 min" },
+        { title: "Serve warm", instruction: "Ladle into bowls and serve.", duration: "2 min" },
+      ],
     },
   ];
+}
+
+const fastFoodPickupEstimate = 40;
+
+function getRecipeTimeMinutes(recipe: Recipe | null): number {
+  const minutes = Number.parseInt(recipe?.time ?? "", 10);
+  return Number.isFinite(minutes) && minutes > 0 ? minutes : 25;
+}
+
+function getMealBenefits(recipe: Recipe | null): string[] {
+  const ingredients = (recipe?.ingredients ?? []).join(" ").toLowerCase();
+  const benefits: string[] = [];
+  if (/\b(vegetables?|veggies|spinach|broccoli|carrot|pepper|tomato|onion|cabbage|squash|asparagus|greens)\b/.test(ingredients)) {
+    benefits.push("Vegetables contribute fiber and a range of vitamins and minerals.");
+  }
+  if (/\b(chickpeas|chickpea|beans|black beans|lentils|peas)\b/.test(ingredients)) {
+    benefits.push("Beans and chickpeas add plant-based protein and fiber.");
+  }
+  if (/\b(whole grains|whole grain|quinoa|brown rice|oats)\b/.test(ingredients)) {
+    benefits.push("Whole grains can add fiber to help make the meal more filling.");
+  }
+  benefits.push("Cooking at home lets you adjust added salt, oil, and portions.");
+  return benefits;
 }
 
 const florenceApiUrl = import.meta.env.VITE_FLORENCE_API_URL ?? "http://localhost:8000";
@@ -158,7 +228,6 @@ const maxImageSize = 10 * 1024 * 1024;
 const Icon = ({ name, size = 22 }: { name: IconName; size?: number }) => {
   const paths: Record<IconName, React.ReactNode> = {
     menu: <><path d="M4 7h16M4 12h12M4 17h16" /></>,
-    users: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
     arrow: <><path d="m15 18-6-6 6-6" /></>,
     camera: <><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5Z" /><circle cx="12" cy="13" r="3.5" /></>,
     text: <><path d="M5 6h14M5 10h14M5 14h9M5 18h12" /></>,
@@ -168,6 +237,8 @@ const Icon = ({ name, size = 22 }: { name: IconName; size?: number }) => {
     filter: <><path d="M4 6h16M7 12h10M10 18h4" /></>,
     lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
     check: <><path d="m5 12 4 4L19 6" /></>,
+    flame: <><path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-10-1 2-2 3-3 4-1-3-3-5-4-6 0 4-3 7-3 12a7 7 0 0 0 7 7Z" /><path d="M12 22a3 3 0 0 0 3-3c0-2-2-3-3-5-1 2-3 3-3 5a3 3 0 0 0 3 3Z" /></>,
+    star: <><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></>,
     copy: <><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></>,
     home: <><path d="m3 11 9-8 9 8" /><path d="M5 10v10h14V10M9 20v-6h6v6" /></>,
     calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></>,
@@ -184,19 +255,16 @@ const Icon = ({ name, size = 22 }: { name: IconName; size?: number }) => {
   );
 };
 
-function AppHeader({ openMenu, goSocial }: { openMenu: () => void; goSocial: () => void }) {
+function AppHeader({ openMenu }: { openMenu: () => void }) {
   return (
     <header className="app-header">
-      <button className="avatar-button" onClick={openMenu} aria-label="Open menu">
-        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="" />
+      <button className="icon-button" onClick={openMenu} aria-label="Open menu">
+        <Icon name="menu" />
       </button>
       <button className="brand" onClick={openMenu} aria-label="Open menu">
         <img src={cookingGeniusLogo} alt="Cooking Genius" />
       </button>
-      <button className="icon-button" onClick={goSocial} aria-label="Friends">
-        <Icon name="users" />
-        <span className="notification-dot" />
-      </button>
+      <span className="header-spacer" />
     </header>
   );
 }
@@ -227,10 +295,8 @@ function InputToggle({ active, go }: { active: "camera" | "text"; go: (screen: S
 function Drawer({ close, go }: { close: () => void; go: (screen: Screen) => void }) {
   const items: { label: string; screen: Screen; icon: IconName }[] = [
     { label: "Home", screen: "home", icon: "home" },
-    { label: "Account information", screen: "account", icon: "user" },
     { label: "Scan ingredients", screen: "camera", icon: "camera" },
     { label: "Type ingredients", screen: "text", icon: "text" },
-    { label: "Social", screen: "social", icon: "users" },
     { label: "Cooking calendar", screen: "calendar", icon: "calendar" },
     { label: "Settings", screen: "settings", icon: "settings" },
   ];
@@ -241,10 +307,6 @@ function Drawer({ close, go }: { close: () => void; go: (screen: Screen) => void
           <img className="drawer-logo" src={cookingGeniusLogo} alt="Cooking Genius" />
           <button className="icon-button" onClick={close} aria-label="Close menu"><Icon name="close" /></button>
         </div>
-        <div className="profile-card">
-          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80" alt="Maya's profile" />
-          <div><strong>Maya Chen</strong><span>Kitchen rookie · 1,240 pts</span></div>
-        </div>
         <nav>
           {items.map((item) => (
             <button key={item.label} onClick={() => { go(item.screen); close(); }}>
@@ -252,7 +314,6 @@ function Drawer({ close, go }: { close: () => void; go: (screen: Screen) => void
             </button>
           ))}
         </nav>
-        <div className="drawer-streak"><Icon name="spark" /><div><strong>3 week streak</strong><span>Cook once this week to keep it going.</span></div></div>
         <button className="close-app">Close app</button>
       </aside>
     </div>
@@ -264,10 +325,9 @@ export default function App() {
   const [drawer, setDrawer] = useState(false);
   const [slide, setSlide] = useState(0);
   const [selectedRecipe, setSelectedRecipe] = useState<number | null>(null);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [friendOpen, setFriendOpen] = useState(false);
-  const [chefCount, setChefCount] = useState(1);
-  const [checks, setChecks] = useState([false, false, false, false]);
+  const [taskIndex, setTaskIndex] = useState(0);
+  const [completedRecipeSteps, setCompletedRecipeSteps] = useState<boolean[]>([]);
+  const [cookResult, setCookResult] = useState<CookResult | null>(null);
   const [recipeDetail, setRecipeDetail] = useState<number | null>(null);
   const [foodScan, setFoodScan] = useState<FoodScan | null>(null);
   const [scanError, setScanError] = useState("");
@@ -344,11 +404,21 @@ export default function App() {
     : recipes;
   const detailRecipe = recipeDetail === null ? null : displayedRecipes[recipeDetail];
   const activeRecipe = selectedRecipe === null ? null : displayedRecipes[selectedRecipe];
+  const recipeSteps = activeRecipe?.steps ?? recipes[0].steps;
+  const estimatedTimeDifference = fastFoodPickupEstimate - getRecipeTimeMinutes(activeRecipe);
   const detectedFoods = foodScan
     ? [...new Set(foodScan.detections.map(({ label }) => label.trim()).filter(Boolean))]
     : [];
+  const finishCooking = (completedSteps: number) => {
+    setCookResult({
+      score: Math.round(50 + 50 * completedSteps / recipeSteps.length),
+      completed_steps: completedSteps,
+      total_steps: recipeSteps.length,
+    });
+    go("summary");
+  };
 
-  const globalHeader = <AppHeader openMenu={() => setDrawer(true)} goSocial={() => go("social")} />;
+  const globalHeader = <AppHeader openMenu={() => setDrawer(true)} />;
 
   const Home = () => (
     <main className="screen home-screen">
@@ -365,19 +435,8 @@ export default function App() {
         <div className="carousel-dots">{photos.map((_, index) => <button key={index} className={slide === index ? "active" : ""} onClick={() => setSlide(index)} aria-label={`Show slide ${index + 1}`} />)}</div>
       </section>
       <section className="home-intro">
-        <div className="intro-title"><p>Tonight’s plan</p><span>Tuesday, 6:14 PM</span></div>
         <h2>Turn what’s in your kitchen into something worth sharing.</h2>
         <p>Scan your ingredients, pick a recipe, and let Cooking Genius split the work.</p>
-        <div className="level-card">
-          <div className="level-icon"><Icon name="spark" /></div>
-          <div><span>LEVEL 12 · KITCHEN WHIZ</span><strong>760 XP to your next reward</strong><i><b /></i></div>
-          <em>1,240</em>
-        </div>
-        <div className="quick-stats">
-          <div><Icon name="clock" /><strong>25 min</strong><span>average cook</span></div>
-          <div><Icon name="spark" /><strong>1,240</strong><span>total points</span></div>
-          <div><Icon name="chef" /><strong>12</strong><span>meals made</span></div>
-        </div>
       </section>
       <div className="sticky-action"><BottomButton onClick={() => go("camera")}>Start a recipe</BottomButton></div>
     </main>
@@ -440,91 +499,57 @@ export default function App() {
       {foodScan && displayedRecipes.length > 0 && <p className="generated-recipes-note">Recipe ideas using foods Florence found, with basic pantry staples.</p>}
       <div className="recipe-scroll">
         {displayedRecipes.map((recipe, index) => (
-          <button key={recipe.name} className={`recipe-card ${selectedRecipe === index ? "selected" : ""}`} onClick={() => setSelectedRecipe(index)} onDoubleClick={() => setRecipeDetail(index)}>
+          <button key={recipe.name} className={`recipe-card ${selectedRecipe === index ? "selected" : ""}`} onClick={() => { setSelectedRecipe(index); setTaskIndex(0); setCompletedRecipeSteps([]); }} onDoubleClick={() => setRecipeDetail(index)}>
             <div className="recipe-image"><img src={recipe.image} alt={recipe.name} /><span>{recipe.tag}</span>{selectedRecipe === index && <i><Icon name="check" size={17} /></i>}</div>
             <div className="recipe-info"><span>{recipe.match}</span><h2>{recipe.name}</h2><div><p><Icon name="clock" size={17} /> {recipe.time}</p><p><Icon name="chef" size={17} /> Easy</p></div><p className="recipe-description">{recipe.description}</p><small>Tap to select · double tap for details</small></div>
           </button>
         ))}
       </div>
       {foodScan && displayedRecipes.length === 0 && <p className="no-recipe-ideas">No food items were recognized, so there aren’t recipe ideas to show yet. Try another photo with the ingredients closer and well lit.</p>}
-      <button className="filter-button" onClick={() => setFilterOpen(true)}><Icon name="filter" size={19} /> Filter recipes <span>2</span></button>
-      <section className="party-panel">
-        <div className="party-title"><div><span>YOUR KITCHEN</span><h3>Chef count</h3></div><div className="chef-faces"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="Maya" />{chefCount > 1 && <div>JL</div>}<strong>{chefCount}</strong></div></div>
-        <button className="outline-button" onClick={() => go("chefs")}><Icon name="plus" size={18} /> Add chefs</button>
-        <label className="extra-prompt"><Icon name="spark" size={19} /><input placeholder="Make it spicy, use one pan..." /><button aria-label="Apply prompt"><Icon name="arrow" size={18} /></button></label>
-      </section>
       <div className="sticky-action"><BottomButton disabled={selectedRecipe === null} onClick={() => go("instructions")}>{selectedRecipe === null ? "Select a recipe" : "Start cooking"}</BottomButton></div>
-      {filterOpen && <div className="modal-layer" onClick={() => setFilterOpen(false)}><div className="bottom-sheet" onClick={(e) => e.stopPropagation()}><i className="sheet-handle" /><div className="sheet-heading"><div><span>PERSONALIZE</span><h2>Filter recipes</h2></div><button onClick={() => setFilterOpen(false)}><Icon name="close" /></button></div><div className="filter-group"><p>DIETARY</p><label><span>Vegetarian</span><input type="checkbox" defaultChecked /></label><label><span>Dairy-free</span><input type="checkbox" /></label></div><div className="filter-group"><p>COOK TIME</p><div className="chip-row"><button>Under 15 min</button><button className="selected">Under 30 min</button><button>Any time</button></div></div><BottomButton onClick={() => setFilterOpen(false)}>Show 8 recipes</BottomButton></div></div>}
-      {detailRecipe && <div className="modal-layer" onClick={() => setRecipeDetail(null)}><div className="detail-modal" onClick={(e) => e.stopPropagation()}><img src={detailRecipe.image} alt="" /><button onClick={() => setRecipeDetail(null)}><Icon name="close" /></button><div><span>{detailRecipe.match} · {detailRecipe.time}</span><h2>{detailRecipe.name}</h2><p>{detailRecipe.description}</p><h3>Ingredients</h3><p>{detailRecipe.ingredients.join(" · ")}</p><h3>How to make it</h3><p>{detailRecipe.method}</p></div></div></div>}
-    </main>
-  );
-
-  const Chefs = () => (
-    <main className="screen pale-screen">
-      <SecondaryHeader title="Your kitchen" back={() => go("recipes")} />
-      <section className="chefs-content">
-        <span className="section-number">03 / TEAM</span><h1>Who’s cooking?</h1><p>Invite up to 3 friends. We’ll give everyone a job.</p>
-        <div className="roster">
-          <div className="roster-item"><span className="position">01</span><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Maya" /><div><strong>You</strong><small>Host · Ready</small></div><span className="host-pill">HOST</span></div>
-          {chefCount > 1 && <div className="roster-item"><span className="position">02</span><div className="initial-avatar">JL</div><div><strong>Jordan Lee</strong><small>Ready to cook</small></div><button onClick={() => setChefCount(1)}><Icon name="close" size={17} /></button></div>}
-        </div>
-        {chefCount < 4 && <button className="add-chef-card" onClick={() => setFriendOpen(true)}><span><Icon name="plus" /></span><div><strong>Add a chef</strong><small>{4 - chefCount} spots left in your kitchen</small></div><Icon name="chevron" size={18} /></button>}
-      </section>
-      <div className="sticky-action"><BottomButton onClick={() => go("recipes")}>Kitchen ready</BottomButton></div>
-      {friendOpen && <div className="modal-layer" onClick={() => setFriendOpen(false)}><div className="bottom-sheet" onClick={(e) => e.stopPropagation()}><i className="sheet-handle" /><div className="sheet-heading"><div><span>INVITE</span><h2>Add a chef</h2></div><button onClick={() => setFriendOpen(false)}><Icon name="close" /></button></div><button className="friend-row" onClick={() => { setChefCount(2); setFriendOpen(false); }}><div className="initial-avatar">JL</div><div><strong>Jordan Lee</strong><span>Online now</span></div><Icon name="plus" /></button><button className="friend-row"><div className="initial-avatar orange">AN</div><div><strong>Alex Nguyen</strong><span>Cooked with you 3×</span></div><Icon name="plus" /></button><button className="copy-link"><Icon name="copy" /> Copy invite link</button></div></div>}
+      {detailRecipe && <div className="modal-layer" onClick={() => setRecipeDetail(null)}><div className="detail-modal" onClick={(e) => e.stopPropagation()}><img src={detailRecipe.image} alt="" /><button onClick={() => setRecipeDetail(null)}><Icon name="close" /></button><div><span>{detailRecipe.match} · {detailRecipe.time}</span><h2>{detailRecipe.name}</h2><p>{detailRecipe.description}</p><h3>Ingredients</h3><p>{detailRecipe.ingredients.join(" · ")}</p><h3>Recipe steps</h3><ol>{detailRecipe.steps.map((step, index) => <li key={`${index}-${step.title}`}>{step.title}: {step.instruction}</li>)}</ol></div></div></div>}
     </main>
   );
 
   const Instructions = () => (
     <main className="screen instructions-screen">
       <SecondaryHeader title="Task preview" back={() => go("recipes")} />
-      <section className="instruction-top"><span className="section-number">READY, SET, MISE</span><h1>{activeRecipe?.name ?? "Here’s your game plan."}</h1><p>{activeRecipe ? `${activeRecipe.time} · A suggested plan based on your selected recipe.` : chefCount > 1 ? "Two chefs. Three jobs. Dinner in 25." : "Three simple jobs. Dinner in 25."}</p></section>
-      <div className="task-owner"><div><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="" /><span><small>YOUR TASKS</small><strong>Maya</strong></span></div><span>1 of {chefCount}</span></div>
+      <section className="instruction-top"><span className="section-number">READY, SET, MISE</span><h1>{activeRecipe?.name ?? "Here’s your game plan."}</h1><p>{activeRecipe ? `${activeRecipe.time} · A suggested plan based on your selected recipe.` : "Three simple jobs. Dinner in 25."}</p></section>
       <section className="task-preview-list">
-        {(activeRecipe
-          ? [["01", "Prep your ingredients", "8 min", `Prepare: ${activeRecipe.ingredients.slice(0, 3).join(", ")}.`], ["02", "Cook the recipe", activeRecipe.time, activeRecipe.method], ["03", "Taste & serve", "5 min", "Adjust the seasoning, plate your food, and enjoy."]]
-          : [["01", "Prep the vegetables", "8 min", "Slice peppers and onion into even strips."], ["02", "Build the lime crema", "4 min", "Mix, season, taste, and adjust."], ["03", "Warm & assemble", "10 min", "Bring every part together."]]
-        ).map((task, index) => <article key={task[0]}><span>{task[0]}</span><div><h2>{task[1]}</h2><p>{task[3]}</p><small><Icon name="clock" size={15} /> {task[2]}{index === 0 && <b><Icon name="camera" size={14} /> Photo check</b>}</small></div></article>)}
+        {recipeSteps.map((step, index) => <article key={`${index}-${step.title}`}><span>{String(index + 1).padStart(2, "0")}</span><div><h2>{step.title}</h2><p>{step.instruction}</p><small><Icon name="clock" size={15} /> {step.duration}</small></div></article>)}
       </section>
-      {chefCount > 1 && <div className="swipe-hint"><Icon name="arrow" size={16} /> Swipe to preview Jordan’s tasks <Icon name="chevron" size={16} /></div>}
-      <div className="sticky-action"><BottomButton onClick={() => go("tasks")}>Start my tasks</BottomButton></div>
+      <div className="sticky-action"><BottomButton onClick={() => { setTaskIndex(0); setCompletedRecipeSteps(recipeSteps.map(() => false)); setCookResult(null); go("tasks"); }}>Start my tasks</BottomButton></div>
     </main>
   );
 
   const Tasks = () => {
-    const taskRows = activeRecipe
-      ? [
-          ["Gather and prep your ingredients", `Get ready: ${activeRecipe.ingredients.slice(0, 3).join(", ")}.`],
-          ["Cook your selected recipe", activeRecipe.method],
-          ["Taste and adjust", "Check the seasoning and make any final adjustments."],
-          ["Show us your finished dish", "Take a photo to complete your meal."],
-        ]
-      : [
-          ["Wash and dry all produce", "No soggy vegetables here."],
-          ["Slice peppers into thin strips", "Aim for pieces about the same size."],
-          ["Dice half the red onion", "Small, even pieces cook fastest."],
-          ["Show us your prep", "Take a photo to unlock cooking."],
-        ];
-    const toggle = (index: number) => {
-      if (index > 0 && !checks[index - 1]) return;
-      const next = [...checks]; next[index] = !next[index]; setChecks(next);
+    const currentStep = recipeSteps[taskIndex];
+    const completedCount = completedRecipeSteps.filter(Boolean).length;
+    const progress = (completedCount / recipeSteps.length) * 100;
+    const isLastStep = taskIndex === recipeSteps.length - 1;
+    const advanceStep = (completed: boolean) => {
+      const nextCompletion = [...completedRecipeSteps];
+      nextCompletion[taskIndex] = completed;
+      setCompletedRecipeSteps(nextCompletion);
+      if (isLastStep) {
+        void finishCooking(nextCompletion.filter(Boolean).length);
+      } else {
+        setTaskIndex((index) => index + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     };
-    const complete = checks.every(Boolean);
     return (
       <main className="screen tasks-screen">
-        <header className="task-header"><button onClick={() => go("instructions")}><Icon name="arrow" /></button><div><span>{activeRecipe?.name ?? "CRISPY GARDEN TACOS"}</span><p>Task 1 of 3</p></div><b>{checks.filter(Boolean).length}/4</b></header>
-        <div className="progress-track"><span style={{ width: `${checks.filter(Boolean).length * 25}%` }} /></div>
+        <header className="task-header"><button onClick={() => taskIndex > 0 ? setTaskIndex((index) => index - 1) : go("instructions")} aria-label={taskIndex > 0 ? "Previous step" : "Back to task preview"}><Icon name="arrow" /></button><div><span>{activeRecipe?.name ?? "CRISPY GARDEN TACOS"}</span><p>Step {taskIndex + 1} of {recipeSteps.length}</p></div><b>{completedCount}/{recipeSteps.length}</b></header>
+        <div className="progress-track" role="progressbar" aria-label="Recipe progress" aria-valuemin={0} aria-valuemax={recipeSteps.length} aria-valuenow={completedCount}><span style={{ width: `${progress}%` }} /></div>
         <section className="active-task">
-          <div className="task-label"><span>01</span><div><small>ACTIVE TASK</small><strong>{activeRecipe ? "Prep your ingredients" : "Prep the vegetables"}</strong></div><p>8 MIN</p></div>
-          <div className="tip"><Icon name="spark" /><p><strong>Mise tip</strong>{activeRecipe ? activeRecipe.method : "Even pieces cook at the same speed. Slow down now, save time later."}</p></div>
-          <div className="checklist">
-            {taskRows.map((row, index) => {
-              const locked = index > 0 && !checks[index - 1];
-              return <button key={row[0]} className={`${checks[index] ? "done" : ""} ${locked ? "locked" : ""}`} onClick={() => toggle(index)}><span className="check-circle">{locked ? <Icon name="lock" size={15} /> : checks[index] ? <Icon name="check" size={17} /> : index + 1}</span><div><strong>{row[0]}</strong><small>{row[1]}</small></div>{index === 3 && !locked && <Icon name="camera" />}</button>;
-            })}
-          </div>
+          <div className="task-label"><span>{String(taskIndex + 1).padStart(2, "0")}</span><div><small>RECIPE STEP</small><strong>{currentStep.title}</strong></div><p>{currentStep.duration.toUpperCase()}</p></div>
+          <article className="task-step-card"><span>STEP {taskIndex + 1}</span><p>{currentStep.instruction}</p></article>
         </section>
-        <div className="sticky-action"><BottomButton disabled={!complete} onClick={() => go("summary")}>{complete ? "Plate & finish" : "Complete each step"}</BottomButton></div>
+        <div className="sticky-action">
+          <BottomButton onClick={() => advanceStep(true)}>{isLastStep ? "Finish recipe" : "Complete step"}</BottomButton>
+          <button className="skip-step-button" onClick={() => advanceStep(false)}>Skip this step</button>
+        </div>
       </main>
     );
   };
@@ -535,22 +560,21 @@ export default function App() {
       <span className="section-number">SERVICE COMPLETE</span>
       <h1>You cooked that.</h1>
       <p>{activeRecipe ? `${activeRecipe.name} · ${activeRecipe.time}` : "Crispy Garden Tacos · 24 minutes"}</p>
-      <div className="score-ring"><div><span>MEAL SCORE</span><strong>92</strong><small>/ 100</small></div></div>
-      <div className="glaze"><Icon name="spark" /><p><strong>{activeRecipe ? "Nice work, chef." : "“Restaurant energy.”"}</strong>{activeRecipe ? `You made ${activeRecipe.name} from your kitchen scan.` : "Excellent color, clean cuts, and the crisp on those chickpeas is doing serious work."}</p></div>
-      <section className="score-breakdown"><div><span>Technique</span><strong>+40</strong></div><div><span>Presentation</span><strong>+32</strong></div><div><span>Zero-waste bonus</span><strong>+20</strong></div></section>
-      <div className="badge-unlock"><div><Icon name="chef" size={28} /></div><span><small>NEW BADGE</small><strong>Weeknight Wizard</strong><p>Cook 3 meals under 30 minutes</p></span></div>
-      <BottomButton onClick={() => { setChecks([false, false, false, false]); setSelectedRecipe(null); go("home"); }}>Back to home</BottomButton>
-    </main>
-  );
-
-  const Social = () => (
-    <main className="screen pale-screen">
-      <SecondaryHeader title="Your people" back={() => go("home")} />
-      <section className="social-content"><span className="section-number">COOKING CREW</span><div className="social-heading"><h1>Friends</h1><button><Icon name="plus" /> Add friend</button></div>
-        {[["JL", "Jordan Lee", "1,520 pts", "5 day streak"], ["AN", "Alex Nguyen", "1,310 pts", "Cooked yesterday"], ["SK", "Sam Kim", "980 pts", "2 day streak"]].map((friend, index) => <div className="friend-item" key={friend[1]}><span className={`initial-avatar color-${index}`}>{friend[0]}</span><div><strong>{friend[1]}</strong><small>{friend[3]}</small></div><b>{friend[2]}</b></div>)}
-        <div className="leaderboard-head"><div><span>GLOBAL</span><h2>Leaderboard</h2></div><select aria-label="Leaderboard timeframe"><option>This week</option><option>All time</option><option>This month</option></select></div>
-        <div className="podium"><div><span>2</span><div className="initial-avatar">JL</div><strong>Jordan</strong><small>380</small></div><div className="winner"><Icon name="spark" /><div className="initial-avatar">MC</div><strong>You</strong><small>420</small></div><div><span>3</span><div className="initial-avatar orange">AN</div><strong>Alex</strong><small>310</small></div></div>
+      <div className="score-ring" style={{ background: `conic-gradient(#f79a1f 0 ${cookResult?.score ?? 0}%, #ffffff20 ${cookResult?.score ?? 0}% 100%)` }}><div><span>COOK SCORE</span><strong>{cookResult?.score ?? 0}</strong><small>/ 100</small></div></div>
+      <div className="glaze"><Icon name="spark" /><p><strong>{cookResult?.score === 100 ? "Perfect finish!" : "Nice work, chef."}</strong>{cookResult ? `You completed ${cookResult.completed_steps} of ${cookResult.total_steps} recipe steps.` : "You finished your recipe."}</p></div>
+      <section className="wellness-card" aria-label="Homemade meal benefits">
+        <div className="wellness-heading"><Icon name="clock" /><div><span>HOMEMADE ADVANTAGE</span><h2>Why this can beat fast food</h2></div></div>
+        <div className="time-saved">
+          <strong>{Math.abs(estimatedTimeDifference)} min</strong>
+          <span>{estimatedTimeDifference > 0 ? "estimated faster than" : estimatedTimeDifference < 0 ? "estimated longer than" : "about the same time as"} a {fastFoodPickupEstimate}-minute fast-food pickup</span>
+        </div>
+        <h3>Benefits in your meal</h3>
+        <ul>{getMealBenefits(activeRecipe).map((benefit) => <li key={benefit}>{benefit}</li>)}</ul>
+        <p className="wellness-note">Time is an estimate. Nutrition varies by recipe, portions, and restaurant; these are ingredient-based benefits, not medical advice.</p>
       </section>
+      <div className="summary-actions">
+        <BottomButton onClick={() => { setTaskIndex(0); setCompletedRecipeSteps([]); setSelectedRecipe(null); setCookResult(null); go("home"); }}>Back to home</BottomButton>
+      </div>
     </main>
   );
 
@@ -564,15 +588,14 @@ export default function App() {
     </main>
   );
 
-  const SimpleSettings = ({ account = false }: { account?: boolean }) => (
-    <main className="screen pale-screen"><SecondaryHeader title={account ? "Account information" : "Settings"} back={() => go("home")} /><section className="settings-content"><span className="section-number">{account ? "YOUR PROFILE" : "PREFERENCES"}</span><h1>{account ? "Make it yours." : "Kitchen settings"}</h1>
-      {account ? <><div className="edit-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80" alt="Profile" /><button><Icon name="camera" /></button></div>{[["Display name","Maya Chen"],["Email address","maya.chen@example.com"],["Password","••••••••••"]].map((field) => <label className="form-field" key={field[0]}><span>{field[0]}</span><input defaultValue={field[1]} /></label>)}<BottomButton onClick={() => go("home")}>Save changes</BottomButton></> :
-      <><div className="settings-group"><p>NOTIFICATIONS</p>{["Task reminders","Friend activity","Weekly cooking recap"].map((item, index) => <label className="setting-row" key={item}><span>{item}</span><input type="checkbox" defaultChecked={index < 2} /></label>)}</div><div className="settings-group"><p>ABOUT</p>{["Terms of service","Privacy policy","Help center"].map((item) => <button className="setting-row" key={item}><span>{item}</span><Icon name="chevron" size={17} /></button>)}</div><button className="delete-account">Delete account</button></>}
+  const SimpleSettings = () => (
+    <main className="screen pale-screen"><SecondaryHeader title="Settings" back={() => go("home")} /><section className="settings-content"><span className="section-number">PREFERENCES</span><h1>Kitchen settings</h1>
+      <div className="settings-group"><p>NOTIFICATIONS</p>{["Task reminders", "Weekly cooking recap"].map((item, index) => <label className="setting-row" key={item}><span>{item}</span><input type="checkbox" defaultChecked={index === 0} /></label>)}</div><div className="settings-group"><p>ABOUT</p>{["Terms of service", "Privacy policy", "Help center"].map((item) => <button className="setting-row" key={item}><span>{item}</span><Icon name="chevron" size={17} /></button>)}</div>
     </section></main>
   );
 
   const views: Record<Screen, React.ReactNode> = {
-    home: <Home />, camera: <Camera />, text: <TextInput />, recipes: <Recipes />, chefs: <Chefs />, instructions: <Instructions />, tasks: <Tasks />, summary: <Summary />, social: <Social />, calendar: <Calendar />, account: <SimpleSettings account />, settings: <SimpleSettings />,
+    home: <Home />, camera: <Camera />, text: <TextInput />, recipes: <Recipes />, instructions: <Instructions />, tasks: <Tasks />, summary: <Summary />, calendar: <Calendar />, settings: <SimpleSettings />,
   };
 
   return <div className="app-shell">{views[screen]}{drawer && <Drawer close={() => setDrawer(false)} go={go} />}</div>;

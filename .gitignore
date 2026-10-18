@@ -4,6 +4,9 @@
 # Python cache
 __pycache__/
 *.pyc
+cookinggenius.sqlite3
+cookinggenius.sqlite3-shm
+cookinggenius.sqlite3-wal
 
 # YOLO models
 *.pt

@@ -92,3 +92,11 @@ downloads and loads the model, and later scans reuse it. Photos are limited to
 The saved token is picked up automatically by Hugging Face Hub. Authentication
 can help with unauthenticated-request limits, but it does not guarantee faster
 downloads; a stalled transfer may also be caused by network or cache issues.
+
+### Cooking score and meal benefits
+
+The website does not currently require an account. The cooking score is based
+on completed recipe steps and is shown with ingredient-based meal benefits.
+The time comparison uses an illustrative 40-minute fast-food pickup estimate;
+actual pickup and cooking times vary. Benefit descriptions are general
+ingredient information, not a nutritional analysis or medical advice.
