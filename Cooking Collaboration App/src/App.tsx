@@ -223,9 +223,11 @@ function getMealBenefits(recipe: Recipe | null): string[] {
 }
 
 const florenceApiUrl = (
-  window.COOKINGGENIUS_CONFIG?.florenceApiUrl?.trim()
-  || import.meta.env.VITE_FLORENCE_API_URL?.trim()
-  || (import.meta.env.DEV ? "http://localhost:8000" : "")
+  import.meta.env.VITE_FLORENCE_API_URL?.trim()
+  || (import.meta.env.DEV
+    ? "http://127.0.0.1:8000"
+    : window.COOKINGGENIUS_CONFIG?.florenceApiUrl?.trim())
+  || ""
 ).replace(/\/+$/, "");
 const maxImageSize = 10 * 1024 * 1024;
 
